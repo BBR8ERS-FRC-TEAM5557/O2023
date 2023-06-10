@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class RobotContainer {
-  public static final LEDs leds = new LEDs();
   
   public RobotContainer() {
     configureBindings();
