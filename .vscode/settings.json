@@ -1,5 +1,6 @@
 {
   "java.configuration.updateBuildConfiguration": "automatic",
+  "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
   "java.server.launchMode": "Standard",
   "files.exclude": {
     "**/.git": true,
@@ -27,3 +28,5 @@
   ],
   "java.test.defaultConfig": "WPIlibUnitTests"
 }
+
+
