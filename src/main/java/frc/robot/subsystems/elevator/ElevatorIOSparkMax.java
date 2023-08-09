@@ -23,8 +23,9 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
     public ElevatorIOSparkMax() {
         System.out.println("[Init] Creating ElevatorIOSparkMax");
-        m_master = SparkMaxFactory.createNEO(12, kMasterMotorConfiguration);
-        m_slave = SparkMaxFactory.createNEO(13, kSlaveMotorConfiguration);
+        m_master = SparkMaxFactory.createNEO(kMasterMotorConfiguration);
+        m_slave = SparkMaxFactory.createNEO(kSlaveMotorConfiguration);
+        //m_slave.follow(m_master, false);
 
         m_encoder = m_master.getEncoder();
         m_pid = m_master.getPIDController();
@@ -33,7 +34,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         SparkMaxFactory.configFramesPositionBoost(m_master);
 
         SparkMaxFactory.configFramesLeaderOrFollower(m_slave);
-        m_slave.follow(m_master, kSlaveMotorConfiguration.kShouldInvert);
+
 
         m_feedforward = new ElevatorFeedforward(kElevatorkS, kElevatorkG, kElevatorkV, kElevatorkA);
     }
@@ -51,6 +52,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         /** Run the Elevator open loop at the specified voltage. */
         public void setVoltage(double volts) {
             m_pid.setReference(volts, ControlType.kVoltage);
+            m_slave.getPIDController().setReference(volts, ControlType.kVoltage);
         }
     
         public void setPercent(double percent) {

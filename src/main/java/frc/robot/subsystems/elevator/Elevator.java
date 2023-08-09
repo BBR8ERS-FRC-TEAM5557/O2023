@@ -53,7 +53,7 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         m_io.updateInputs(m_inputs);
         Logger.getInstance().processInputs("Elevator", m_inputs);
-        Logger.getInstance().recordOutput("Elevatr/Demand", m_demand);
+        Logger.getInstance().recordOutput("Elevator/Demand", m_demand);
 
         if (m_mode == ControlMode.OPEN_LOOP) {
             m_io.setPercent(m_demand);

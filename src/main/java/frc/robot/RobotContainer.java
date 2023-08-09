@@ -54,14 +54,14 @@ public class RobotContainer {
 
     public RobotContainer() {
         if (kIsReal) {
-            m_swerve = new Swerve(new GyroIOPigeon2(),
+            /**m_swerve = new Swerve(new GyroIOPigeon2(),
                     new ModuleIOSparkMax(0, kFLDriveMotor, kFLTurnMotor, kFLCancoder, kFLOffset),
                     new ModuleIOSparkMax(1, kFRDriveMotor, kFRTurnMotor, kFRCancoder, kFROffset),
                     new ModuleIOSparkMax(2, kBLDriveMotor, kBLTurnMotor, kBLCancoder, kBLOffset),
-                    new ModuleIOSparkMax(3, kBRDriveMotor, kBRTurnMotor, kBRCancoder, kBROffset));
+                    new ModuleIOSparkMax(3, kBRDriveMotor, kBRTurnMotor, kBRCancoder, kBROffset));*/
             m_elevator = new Elevator(new ElevatorIOSparkMax());
-            m_wrist = new Wrist(new WristIOSparkMax());
-            m_roller = new Roller(new RollerIOSparkMax());
+           // m_wrist = new Wrist(new WristIOSparkMax());
+            //m_roller = new Roller(new RollerIOSparkMax());
         } else {
             m_swerve = new Swerve(new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(),
                     new ModuleIOSim(), new ModuleIOSim());
@@ -145,7 +145,8 @@ public class RobotContainer {
         new Trigger(m_operator::getLeftStickButton).whileTrue(m_elevator.homeElevator());
 
         new Trigger(() -> m_operator.getRightBumper() && m_operator.getLeftBumper())
-                .whileTrue(m_elevator.runElevatorOpenLoop(() -> getElevatorJogger()));
+                .whileTrue(m_elevator.runElevatorOpenLoop(() -> getElevatorJogger()))
+                .onFalse(m_elevator.runElevatorOpenLoop(() -> 0.0));
 
 
         // Manual Wrist

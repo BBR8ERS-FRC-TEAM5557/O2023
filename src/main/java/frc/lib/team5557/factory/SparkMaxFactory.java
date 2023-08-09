@@ -25,7 +25,7 @@ public class SparkMaxFactory {
         public CANDeviceId canID;
 
         public PIDConfiguration pid;
-        public SoftLimitsConfiguration limits;
+        public SoftLimitsConfiguration limits = null;
 
         public IdleMode kIdleMode = IdleMode.kCoast;
         public boolean kShouldInvert = false;
@@ -115,7 +115,7 @@ public class SparkMaxFactory {
     }
 
     public static void configFramesLeaderOrFollower(CANSparkMax sparkMax) {
-        sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 10);
+        sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65535);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65535);

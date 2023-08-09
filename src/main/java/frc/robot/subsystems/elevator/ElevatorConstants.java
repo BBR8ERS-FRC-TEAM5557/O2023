@@ -19,7 +19,7 @@ public class ElevatorConstants {
     public static final double kTimeToCruise = 1.0; // sec
 
     public static final double kEncoderHomePosition = 0.0; //inches
-    public static final double kMinHeight = 0.0; //inches
+    public static final double kMinHeight = -10000000.0; //inches
     public static final double kMaxHeight = 30.0; //inches
 
     public static final double kHomeVoltage = 4.0;
@@ -51,7 +51,7 @@ public class ElevatorConstants {
 
     public static final SparkMaxConfiguration kMasterMotorConfiguration = new SparkMaxConfiguration();
     static {
-        kMasterMotorConfiguration.canID = new CANDeviceId(CANDeviceType.SPARK_MAX, 0);
+        kMasterMotorConfiguration.canID = new CANDeviceId(CANDeviceType.SPARK_MAX, 31);
         kMasterMotorConfiguration.label = "Elevator Master";
 
         kMasterMotorConfiguration.pid = kPIDConfiguration;
@@ -68,7 +68,7 @@ public class ElevatorConstants {
 
     public static final SparkMaxConfiguration kSlaveMotorConfiguration = new SparkMaxConfiguration();
     static {
-        kSlaveMotorConfiguration.canID = new CANDeviceId(CANDeviceType.SPARK_MAX, 0);
+        kSlaveMotorConfiguration.canID = new CANDeviceId(CANDeviceType.SPARK_MAX, 32);
         kSlaveMotorConfiguration.label = "Elevator Slave";
 
         kSlaveMotorConfiguration.kVoltageCompensation = 12.0;
