@@ -12,7 +12,7 @@ import frc.lib.team5557.util.CANDeviceId.CANDeviceType;
 public class ElevatorConstants {
     public static final double kGearReduction = 15.0;
     public static final double kSprocketPitchDiameter = 1.75; //inches
-    public static final double kRotationsPerInch = kGearReduction * kSprocketPitchDiameter * Math.PI;
+    public static final double kRotationsPerInch = kGearReduction / (kSprocketPitchDiameter * Math.PI);
 
     public static final double kPadding = 0.5; // inches
     public static final double kCruiseVelocity = 20.0; // inches/sec
