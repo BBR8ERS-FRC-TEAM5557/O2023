@@ -14,7 +14,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 public class ElevatorIOSparkMax implements ElevatorIO {
 
     private final CANSparkMax m_master;
-    private final CANSparkMax m_slave;
+    private final CANSparkMax m_slave;                                                                                                                           
 
     private final RelativeEncoder m_encoder;
     private final SparkMaxPIDController m_pid;
@@ -55,6 +55,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
             m_slave.getPIDController().setReference(volts, ControlType.kVoltage);
         }
     
+
         public void setPercent(double percent) {
             m_pid.setReference(percent, ControlType.kDutyCycle);
         }
