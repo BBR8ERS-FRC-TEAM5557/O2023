@@ -14,7 +14,7 @@ public class GyroIOPigeon2 implements GyroIO {
     public GyroIOPigeon2() {
         System.out.println("[Init] Creating GyroIOPigeon2");
 
-        pigeon = new Pigeon2(0);
+        pigeon = new Pigeon2(15);
 
         pigeon.configFactoryDefault();
         pigeon.zeroGyroBiasNow();

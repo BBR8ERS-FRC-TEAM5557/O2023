@@ -43,7 +43,7 @@ public class SparkMaxFactory {
         public double kD = 0.0;
         public double kF = 0.0;
         public double kTolerance = 0.0;
-        public double kMaxEffort = 1.0;
+        public double kMaxEffort = 12.0;
     }
 
     public static class SoftLimitsConfiguration {
@@ -91,7 +91,7 @@ public class SparkMaxFactory {
                 pid.setD(config.pid.kD, 0);
                 pid.setFF(config.pid.kF, 0);
 
-                pid.setOutputRange(-config.pid.kMaxEffort, config.pid.kMaxEffort);
+                pid.setOutputRange(-config.pid.kMaxEffort, config.pid.kMaxEffort, 0);
                 pid.setIZone(config.pid.kTolerance * 2, 0);
                 pid.setIMaxAccum(1.0, 0);
             }

@@ -27,15 +27,15 @@ public class SwerveConstants {
     public static final int kAbsoluteResetIterations = 100;
     public static final double kAbsoluteResetMaxOmega = 4.0; //must rotate at less than a degree per second
 
-    public static final double kAngleGearReduction = 1.0;
-    public static final double kDriveGearReduction = 1.0;
-    public static final double kWheelCircumference = Units.inchesToMeters(4.0) * Math.PI * 2.0;
+    public static final double kAngleGearReduction = 150.0 / 7.0;
+    public static final double kDriveGearReduction = (50.0 / 14.0) * (17.0 / 27.0) * ( 45.0 / 15.0);
+    public static final double kWheelCircumference = Units.inchesToMeters(4.0) * Math.PI;
 
     public static final double kAnglekP = 0.6; // FIXME: error(rotations) * kP = volts -> kp = 0.6 = 12.0 volts / 20 rotations
     public static final double kAnglekI = 0.0;
     public static final double kAnglekD = 0.0;
 
-    public static final double kDrivekP = 0.003; // FIXME: error(rpm) * kP = volts -> kp = 0.6 = 12.0 volts / 5000 rpm
+    public static final double kDrivekP = 0.000; // FIXME: error(rpm) * kP = volts -> kp = 0.6 = 12.0 volts / 5000 rpm
     public static final double kDrivekI = 0.0;
     public static final double kDrivekD = 0.0;
 

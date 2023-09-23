@@ -54,14 +54,14 @@ public class RobotContainer {
 
     public RobotContainer() {
         if (kIsReal) {
-            /**m_swerve = new Swerve(new GyroIOPigeon2(),
+            m_swerve = new Swerve(new GyroIOPigeon2(),
                     new ModuleIOSparkMax(0, kFLDriveMotor, kFLTurnMotor, kFLCancoder, kFLOffset),
                     new ModuleIOSparkMax(1, kFRDriveMotor, kFRTurnMotor, kFRCancoder, kFROffset),
                     new ModuleIOSparkMax(2, kBLDriveMotor, kBLTurnMotor, kBLCancoder, kBLOffset),
-                    new ModuleIOSparkMax(3, kBRDriveMotor, kBRTurnMotor, kBRCancoder, kBROffset));*/
-            m_elevator = new Elevator(new ElevatorIOSparkMax());
-           // m_wrist = new Wrist(new WristIOSparkMax());
-            //m_roller = new Roller(new RollerIOSparkMax());
+                    new ModuleIOSparkMax(3, kBRDriveMotor, kBRTurnMotor, kBRCancoder, kBROffset));
+            // m_elevator = new Elevator(new ElevatorIOSparkMax());
+            // m_wrist = new Wrist(new WristIOSparkMax());
+            // m_roller = new Roller(new RollerIOSparkMax());
         } else {
             m_swerve = new Swerve(new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(),
                     new ModuleIOSim(), new ModuleIOSim());
@@ -96,7 +96,7 @@ public class RobotContainer {
 
 
         m_swerve.setDefaultCommand(new TeleopDrive(this::getForwardInput, this::getStrafeInput,
-                this::getRotationInput, () -> m_driver.getPOV() == 180));
+                this::getRotationInput, m_driver::getRightBumper));
 
         // Driver sets cone intake
         new Trigger(m_driver::getLeftBumper)
@@ -108,16 +108,16 @@ public class RobotContainer {
 
         // Driver sets cube intake
         new Trigger(() -> m_driver.getLeftTriggerAxis() > 0.5)
-                // .onTrue(new InstantCommand(
-                // () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
+                .onTrue(new InstantCommand(
+                        () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
                 .onFalse(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kUncappedLimits)))
                 .whileTrue(Superstructure.intakeGroundCube());
 
         // Driver sets Substation intake
         new Trigger(() -> m_driver.getRightTriggerAxis() > 0.5)
-                // .onTrue(new InstantCommand(
-                // () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
+                .onTrue(new InstantCommand(
+                        () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
                 .onFalse(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kUncappedLimits)))
                 .whileTrue(Superstructure.intakeSubstation());
@@ -208,10 +208,7 @@ public class RobotContainer {
     }
 
     public double getRotationInput() {
-        return -square(deadband(m_driver.getLeftTriggerAxis(), 0.1)); // FIX ME: For some reason
-                                                                      // only
-                                                                      // works on sim left
-                                                                      // trigger axis
+        return -square(deadband(m_driver.getRightX(), 0.1));
     }
 
     public double getElevatorJogger() {
