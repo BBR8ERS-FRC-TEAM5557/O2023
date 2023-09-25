@@ -26,7 +26,7 @@ public class AutoBalance {
                 Commands.deadline(new WaitCommand(1.0), driveOntoPlatformCommand()),
                 Commands.deadline(new WaitCommand(1.0), balanceOnPlatformCommand()),
                 maintainBalanceCommand()
-            );
+            ).withName("Auto Balance Command");
         }
     
         /* Applies to when the robot first drives up the ramp flaps to the balance, 
@@ -50,7 +50,7 @@ public class AutoBalance {
                 public boolean isFinished() {
                     return swerve.getRawGyroPitch().orElse(new Rotation2d()).getDegrees() < flap_trigger_angle;
                 }
-            };
+            }.withName("Drive Onto Flap");
         }
     
         /* The robot drives onto the Charging Station (Ramp is pushed into tilted state) */
@@ -80,7 +80,7 @@ public class AutoBalance {
                     return timer.hasElapsed(0.4);
                 }
 
-            };
+            }.withName("Drive Onto Platform");
         }
     
         /* Wait for gyro rate of change to detect when we start pitching forwards */
@@ -108,7 +108,7 @@ public class AutoBalance {
                     return false;
                 }
     
-            };
+            }.withName("Balance On Platform");
         }
     
         /* Once the robot hits the engage position for the first time, 
@@ -151,7 +151,7 @@ public class AutoBalance {
                     }
                     return false;
                 }
-            };
+            }.withName("Maintain Balance");
         }
     
 }

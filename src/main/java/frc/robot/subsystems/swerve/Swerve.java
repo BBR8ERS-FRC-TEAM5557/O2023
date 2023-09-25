@@ -15,6 +15,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.auto.SystemsCheckManager.SwerveModuleSystemCheckRequest;
@@ -26,6 +28,7 @@ import frc.robot.util.MovingAverage;
 import frc.robot.util.RobotStateEstimator;
 import frc.robot.util.SwerveSetpoint;
 import frc.robot.util.SwerveSetpointGenerator;
+import frc.robot.util.Util;
 import frc.robot.util.SwerveSetpointGenerator.KinematicLimits;
 
 public class Swerve extends SubsystemBase {
@@ -66,6 +69,16 @@ public class Swerve extends SubsystemBase {
         m_modules[1] = new Module(frModuleIO, 1);
         m_modules[2] = new Module(blModuleIO, 2);
         m_modules[3] = new Module(brModuleIO, 3);
+
+
+        ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Swerve");
+
+        shuffleboardTab.addNumber("Heading", () -> Util.truncate(getYaw().getDegrees(), 2));
+        shuffleboardTab.addNumber("Velocity", () -> Util.truncate(Math.hypot(getFieldVelocity().dx, getFieldVelocity().dy), 2));
+
+        shuffleboardTab.addNumber("Velocity Kinematic Limit", () -> getKinematicLimit().kMaxDriveVelocity);
+        shuffleboardTab.addString("Control Mode", () -> getControlMode().name());
+        shuffleboardTab.addString("Command", () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "NONE");
     }
 
     @Override
@@ -283,8 +296,16 @@ public class Swerve extends SubsystemBase {
         return m_smoothedPitchVelocity.get();
     }
 
+    public Twist2d getFieldVelocity() {
+        return m_fieldVelocity;
+    }
+
     public KinematicLimits getKinematicLimit() {
         return m_kinematicLimits;
+    }
+
+    public ControlMode getControlMode() {
+        return m_mode;
     }
 
     public void setKinematicLimits(KinematicLimits limits) {

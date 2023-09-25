@@ -7,7 +7,13 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.subsystems.swerve.module.ModuleIO.ModuleIOInputs;
+import frc.robot.util.Util;
 
 public class Module {
     private final ModuleIO m_io;
@@ -46,6 +52,15 @@ public class Module {
                 moduleLabel = "";
                 break;
         }
+
+
+        ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
+        ShuffleboardLayout container = tab.getLayout(moduleLabel + " Module", BuiltInLayouts.kList)
+                .withSize(2, 2).withPosition(2 * this.moduleNumber, 3);
+        container.addNumber("Absolute", () -> Util.truncate(Units.radiansToDegrees(m_inputs.angleAbsolutePositionRad), 2));
+        container.addNumber("Integrated", () -> Util.truncate(Units.radiansToDegrees(m_inputs.angleInternalPositionRad), 2));
+        container.addNumber("Velocity", () -> Util.truncate(m_inputs.driveVelocityMetersPerSec, 2));
+        container.addNumber("Applied Volts", () -> Util.truncate(m_inputs.driveAppliedVolts, 2));
     }
 
     /**

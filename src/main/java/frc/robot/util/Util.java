@@ -12,8 +12,7 @@ public class Util {
     /**
      * Prevent this class from being instantiated.
      */
-    private Util() {
-    }
+    private Util() {}
 
     /**
      * Limits the given input to the given magnitude.
@@ -25,7 +24,7 @@ public class Util {
     public static double limit(double v, double min, double max) {
         return Math.min(max, Math.max(min, v));
     }
-    
+
     public static boolean inRange(double v, double maxMagnitude) {
         return inRange(v, -maxMagnitude, maxMagnitude);
     }
@@ -74,12 +73,19 @@ public class Util {
     }
 
     public static double clamp(double value, double min, double max) {
-		if (min > max) {
-			throw new IllegalArgumentException("min must not be greater than max");
-		}
+        if (min > max) {
+            throw new IllegalArgumentException("min must not be greater than max");
+        }
 
-		return Math.max(min, Math.min(value, max));
-	}
+        return Math.max(min, Math.min(value, max));
+    }
+
+    public static double truncate(double value, int decimalpoint) {
+        value = value * Math.pow(10, decimalpoint);
+        value = Math.floor(value);
+        value = value / Math.pow(10, decimalpoint);
+        return value;
+    }
 
     public static double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
         double lowerBound;
@@ -114,7 +120,8 @@ public class Util {
         double deadbandedValue = deadBand(value, deadband);
         if (epsilonEquals(deadbandedValue, 0.0))
             return 0.0;
-        return Math.signum(deadbandedValue) * ((Math.abs(deadbandedValue) - deadband) / (maxValue - deadband));
+        return Math.signum(deadbandedValue)
+                * ((Math.abs(deadbandedValue) - deadband) / (maxValue - deadband));
     }
 
 }
