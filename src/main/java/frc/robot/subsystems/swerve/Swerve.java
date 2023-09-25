@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -73,7 +74,7 @@ public class Swerve extends SubsystemBase {
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Swerve");
 
-        shuffleboardTab.addNumber("Heading", () -> Util.truncate(getYaw().getDegrees(), 2));
+        shuffleboardTab.addNumber("Heading", () -> Util.truncate(getYaw().getDegrees(), 2)).withWidget(BuiltInWidgets.kGyro);
         shuffleboardTab.addNumber("Velocity", () -> Util.truncate(Math.hypot(getFieldVelocity().dx, getFieldVelocity().dy), 2));
 
         shuffleboardTab.addNumber("Velocity Kinematic Limit", () -> getKinematicLimit().kMaxDriveVelocity);
