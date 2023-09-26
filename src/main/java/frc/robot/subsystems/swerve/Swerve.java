@@ -73,9 +73,9 @@ public class Swerve extends SubsystemBase {
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Swerve");
         shuffleboardTab.addNumber("Heading", () -> Util.truncate(getYaw().getDegrees(), 2)).withWidget(BuiltInWidgets.kGyro);
-        shuffleboardTab.addNumber("Velocity", () -> Util.truncate(Math.hypot(getFieldVelocity().dx, getFieldVelocity().dy), 2));
+        shuffleboardTab.addNumber("Velocity", () -> Util.truncate(Math.hypot(getFieldVelocity().dx, getFieldVelocity().dy), 2)).withWidget(BuiltInWidgets.kGraph);
 
-        shuffleboardTab.addNumber("Velocity Kinematic Limit", () -> getKinematicLimit().kMaxDriveVelocity);
+        shuffleboardTab.addNumber("Velocity Kinematic Limit", () -> getKinematicLimit().kMaxDriveVelocity).withWidget(BuiltInWidgets.kNumberBar);
         shuffleboardTab.addString("Control Mode", () -> getControlMode().name());
         shuffleboardTab.addString("Command", () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "NONE");
     }
