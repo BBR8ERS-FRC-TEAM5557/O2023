@@ -49,7 +49,6 @@ public class Swerve extends SubsystemBase {
             new SwerveSetpoint(m_desChassisSpeeds, new SwerveModuleState[] {new SwerveModuleState(),
                     new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState()});
     private Twist2d m_fieldVelocity = new Twist2d();
-
     private int m_systemCheckModuleNumber = 0;
     private SwerveModuleSystemCheckRequest m_systemCheckState =
             SwerveModuleSystemCheckRequest.DO_NOTHING;
@@ -73,7 +72,6 @@ public class Swerve extends SubsystemBase {
 
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Swerve");
-
         shuffleboardTab.addNumber("Heading", () -> Util.truncate(getYaw().getDegrees(), 2)).withWidget(BuiltInWidgets.kGyro);
         shuffleboardTab.addNumber("Velocity", () -> Util.truncate(Math.hypot(getFieldVelocity().dx, getFieldVelocity().dy), 2));
 
@@ -295,6 +293,10 @@ public class Swerve extends SubsystemBase {
 
     public double getSmoothedPitchVelocityDegPerSec() {
         return m_smoothedPitchVelocity.get();
+    }
+
+    public SwerveSetpoint getSwerveSetpoint() {
+        return m_swerveSetpoint;
     }
 
     public Twist2d getFieldVelocity() {

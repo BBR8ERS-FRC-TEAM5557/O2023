@@ -8,11 +8,13 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -58,22 +60,20 @@ public class AutoRoutineManager {
     private void generateAutoChoices() {
         m_chooser.addDefaultOption("Do Nothing", null);
 
-        m_chooser.addOption("3 Piece", Commands.sequence(new PrintCommand("Starting 3 piece"),
-                new InstantCommand(() -> setPose(
-                        m_trajectoryMap.get("LeftToSweepToCubeScore").getInitialHolonomicPose())),
-                Superstructure.scoreConeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
+        m_chooser.addOption("3 Piece", Commands.sequence(
+                new PrintCommand("Starting 3 piece"),
+                getPoseResetCommand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
+                //Superstructure.scoreConeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
                 getFollowComand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
-                Superstructure.scoreCubeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
+                //Superstructure.scoreCubeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
                 getFollowComand(m_trajectoryMap.get("LeftCubeScoreToLeftMidIntake")),
                 getFollowComand(m_trajectoryMap.get("LeftMidIntakeToConeScore")),
                 getFollowComand(m_trajectoryMap.get("ConeScoreToEvacLeft"))
-
         ));
 
         m_chooser.addOption("2 Piece + Balance", Commands.sequence(
                 new PrintCommand("Starting 2 piece w/ balance"),
-                new InstantCommand(() -> setPose(
-                        m_trajectoryMap.get("LeftToSweepToCubeScore").getInitialHolonomicPose())),
+                getPoseResetCommand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
                 Superstructure.scoreConeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
                 getFollowComand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
                 Superstructure.scoreCubeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
@@ -114,17 +114,28 @@ public class AutoRoutineManager {
     }
 
     private Command getFollowComand(PathPlannerTrajectory path) {
+        PathPlannerTrajectory transformedPath = PathPlannerTrajectory.transformTrajectoryForAlliance(path, DriverStation.getAlliance());
+
         PPSwerveControllerCommand followCommand =
-                new PPSwerveControllerCommand(path, RobotStateEstimator.getInstance()::getPose,
+                new PPSwerveControllerCommand(transformedPath, RobotStateEstimator.getInstance()::getPose,
                         DriveMotionPlanner.getForwardController(), // X controller
                         DriveMotionPlanner.getStrafeController(), // Y controller
                         DriveMotionPlanner.getRotationController(), // Rotation controller
                         swerve::driveOpenLoop, // Module states consumer
-                        true, // Should the path be mirrored depending on alliance color.
+                        false, // Should the path be mirrored depending on alliance color.
                         swerve // Requires swerve subsystem
                 );
+        
         return new FollowPathWithEvents(followCommand, path.getMarkers(), m_eventMap).alongWith(
-                new InstantCommand(() -> Logger.getInstance().recordOutput("FollowPath", path)));
+                new InstantCommand(() -> Logger.getInstance().recordOutput("PathFollowing", transformedPath)),
+                new InstantCommand(() -> RobotStateEstimator.getInstance().addFieldTrajectory("AutoTrajectory", transformedPath)));
+    }
+
+    private Command getPoseResetCommand(PathPlannerTrajectory path) {
+        PathPlannerState transformedState = PathPlannerTrajectory.transformStateForAlliance(path.getInitialState(), DriverStation.getAlliance());
+        Pose2d transformedPose = new Pose2d(transformedState.poseMeters.getTranslation(), transformedState.holonomicRotation);
+
+        return new InstantCommand(() -> setPose(transformedPose));
     }
 
     public Command getAutoCommand() {
