@@ -18,6 +18,7 @@ public class Roller extends SubsystemBase {
     private State currentState = State.DO_NOTHING;
 
     public Roller(RollerIO io) {
+        System.out.println("[Init] Creating Roller");
         this.m_io = io;
     }
 

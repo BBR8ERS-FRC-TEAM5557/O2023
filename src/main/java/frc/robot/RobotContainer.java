@@ -112,6 +112,7 @@ public class RobotContainer {
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Driver");
         shuffleboardTab.addString("Node Type", () -> ObjectiveTracker.getNodeLevel().name() + " " + ObjectiveTracker.getGamePiece().name());
+        shuffleboardTab.addString("Super State", () -> Superstructure.superGoal.name());
     }
 
     private void configureBindings() {

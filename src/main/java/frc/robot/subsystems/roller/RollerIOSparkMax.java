@@ -12,6 +12,7 @@ public class RollerIOSparkMax implements RollerIO {
     private CANSparkMax motor;
     
     public RollerIOSparkMax() {
+        System.out.println("[Init] Creating RollerIOSparkMax");
         motor = SparkMaxFactory.createNEO(kRollerMotorConfiguration);
         BurnManager.burnFlash(motor);
     }
