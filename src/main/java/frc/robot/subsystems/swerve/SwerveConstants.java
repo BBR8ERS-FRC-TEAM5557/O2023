@@ -94,7 +94,7 @@ public class SwerveConstants {
 
         kDriveMotorConfiguration.kShouldInvert = false;
         kDriveMotorConfiguration.kVoltageCompensation = 12.0;
-        kDriveMotorConfiguration.kSmartCurrentLimit = 40.0;
+        kDriveMotorConfiguration.kSmartCurrentLimit = 50.0;
         kDriveMotorConfiguration.kIdleMode = IdleMode.kBrake;
     }
 
