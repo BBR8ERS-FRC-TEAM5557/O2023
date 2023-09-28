@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.lib.team5557.factory.BurnManager;
 import frc.lib.team5557.factory.SparkMaxFactory;
 import frc.lib.team6328.TunableNumber;
 
@@ -64,6 +65,9 @@ public class ModuleIOSparkMax implements ModuleIO {
         m_angleMotorPID.setPositionPIDWrappingMinInput(0.0);
         m_angleMotorPID.setPositionPIDWrappingMaxInput(kAngleGearReduction);
         m_angleMotorPID.setPositionPIDWrappingEnabled(true);
+        
+        BurnManager.burnFlash(m_angleMotor);
+        BurnManager.burnFlash(m_driveMotor);
 
         var resetSuccesful = false;
         int resetIteration = 0;

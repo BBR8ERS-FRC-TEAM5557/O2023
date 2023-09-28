@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import frc.lib.team5557.factory.BurnManager;
 import frc.lib.team5557.factory.SparkMaxFactory;
 import frc.lib.team6328.TunableNumber;
 
@@ -31,13 +32,14 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         m_master = SparkMaxFactory.createNEO(kMasterMotorConfiguration);
         m_slave = SparkMaxFactory.createNEO(kSlaveMotorConfiguration);
         m_slave.follow(m_master, false);
+        BurnManager.burnFlash(m_master);
+        BurnManager.burnFlash(m_slave);
 
         m_encoder = m_master.getEncoder();
         m_pid = m_master.getPIDController();
 
         SparkMaxFactory.configFramesLeaderOrFollower(m_master);
         SparkMaxFactory.configFramesPositionBoost(m_master);
-
         SparkMaxFactory.configFramesLeaderOrFollower(m_slave);
 
         m_feedforward = new ElevatorFeedforward(kElevatorkS, kElevatorkG, kElevatorkV, kElevatorkA);

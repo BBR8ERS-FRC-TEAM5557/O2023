@@ -13,10 +13,8 @@ import frc.lib.team5557.util.CANDeviceId;
 import frc.lib.team5557.util.CANDeviceId.CANDeviceType;
 
 public class SparkMaxFactory {
-
     public static final int configCANTimeout = 500;
     public static final int configCount = 4;
-    private static final boolean shouldBurn = BurnManager.shouldBurn();
 
     private static final CANDeviceFinder can = new CANDeviceFinder();
 
@@ -63,9 +61,7 @@ public class SparkMaxFactory {
         SparkMaxPIDController pid = sparkMax.getPIDController();
         RelativeEncoder encoder = sparkMax.getEncoder();
 
-        if(shouldBurn()) {
-            sparkMax.restoreFactoryDefaults();
-        }
+        BurnManager.restoreFactoryDefaults(sparkMax);
         
         sparkMax.setCANTimeout(configCANTimeout);
 
@@ -100,18 +96,9 @@ public class SparkMaxFactory {
                 configSoftLimits(sparkMax, config.limits);
             }
         }
-
         sparkMax.setCANTimeout(0);
 
-        if(shouldBurn()) {
-            sparkMax.burnFlash();
-        }
-
         return sparkMax;
-    }
-
-    public static boolean shouldBurn() {
-        return shouldBurn;
     }
 
     public static void configFramesLeaderOrFollower(CANSparkMax sparkMax) {
@@ -132,6 +119,10 @@ public class SparkMaxFactory {
 
     public static void configFramesPositionBoost(CANSparkMax sparkMax) {
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 10);
+    }
+
+    public static void configFramesAbsoluteEncoderBoost(CANSparkMax sparkMax) {
+        sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 10);
     }
 
     public static void configSoftLimits(CANSparkMax sparkMax, SoftLimitsConfiguration config) {

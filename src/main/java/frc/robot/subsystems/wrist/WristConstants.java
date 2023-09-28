@@ -11,7 +11,7 @@ import frc.robot.Constants;
 
 public class WristConstants {
     public static final double kGearReduction = 36.0;
-    public static final double kFirstSprocketTeethCount = 12.0; //teeth
+    public static final double kFirstSprocketTeethCount = 16.0; //teeth
     public static final double kSecondSprocketTeethCount = 48.0; //teeth
     public static final double kRotationsPerDegree = kGearReduction * (kSecondSprocketTeethCount / kFirstSprocketTeethCount) / 360.0;
 

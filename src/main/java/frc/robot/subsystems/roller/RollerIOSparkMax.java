@@ -2,7 +2,7 @@ package frc.robot.subsystems.roller;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
-
+import frc.lib.team5557.factory.BurnManager;
 import frc.lib.team5557.factory.SparkMaxFactory;
 
 import static frc.robot.subsystems.roller.RollerConstants.*;
@@ -13,6 +13,7 @@ public class RollerIOSparkMax implements RollerIO {
     
     public RollerIOSparkMax() {
         motor = SparkMaxFactory.createNEO(kRollerMotorConfiguration);
+        BurnManager.burnFlash(motor);
     }
 
     public void updateInputs(RollerIOInputs inputs) {

@@ -1,6 +1,5 @@
 package frc.robot.subsystems.wrist;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -10,6 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import frc.lib.team5557.factory.BurnManager;
 import frc.lib.team5557.factory.SparkMaxFactory;
 import frc.lib.team6328.TunableNumber;
 
@@ -36,14 +36,17 @@ public class WristIOSparkMax implements WristIO {
         m_pid = m_master.getPIDController();
 
         m_absoluteEncoder = m_master.getAbsoluteEncoder(Type.kDutyCycle);
+        m_absoluteEncoder.setPositionConversionFactor(360.0);
+        m_absoluteEncoder.setVelocityConversionFactor(360.0);
         m_absoluteEncoder.setInverted(true);
-        m_absoluteEncoder.setZeroOffset(0.37994);
-
-        m_encoder.setPosition(degreesToRotations(m_absoluteEncoder.getPosition() * 360.0));
+        m_absoluteEncoder.setZeroOffset(0.37994 * 360.0);
         m_pid.setFeedbackDevice(m_absoluteEncoder);
+        m_encoder.setPosition(degreesToRotations(m_absoluteEncoder.getPosition()));
+        BurnManager.burnFlash(m_master);
 
         SparkMaxFactory.configFramesLeaderOrFollower(m_master);
         SparkMaxFactory.configFramesPositionBoost(m_master);
+        SparkMaxFactory.configFramesAbsoluteEncoderBoost(m_master);
 
         m_feedforward = new ArmFeedforward(kWristkS, kWristkG, kWristkV, kWristkA);
     }
@@ -52,8 +55,8 @@ public class WristIOSparkMax implements WristIO {
     public void updateInputs(WristIOInputs inputs) {
         inputs.WristInternalPositionDeg = rotationsToDegrees(m_encoder.getPosition());
         inputs.WristInternalVelocityDegPerSec = rotationsToDegrees(m_encoder.getVelocity()) / 60.0;
-        inputs.WristAbsolutePositionDeg = m_absoluteEncoder.getPosition() * 360.0;
-        inputs.WristAbsoluteVelocityDegPerSec = m_absoluteEncoder.getVelocity() * 360.0;
+        inputs.WristAbsolutePositionDeg = m_absoluteEncoder.getPosition();
+        inputs.WristAbsoluteVelocityDegPerSec = m_absoluteEncoder.getVelocity();
         inputs.WristAppliedVolts = m_master.getAppliedOutput() * m_master.getBusVoltage();
         inputs.WristCurrentAmps = new double[] { m_master.getOutputCurrent() };
         inputs.WristTempCelsius = new double[] { m_master.getMotorTemperature() };
@@ -83,7 +86,7 @@ public class WristIOSparkMax implements WristIO {
     }
 
     public void resetSensorPosition(double angleDegrees) {
-        m_encoder.setPosition(angleDegrees);
+        m_encoder.setPosition(degreesToRotations(angleDegrees));
     }
 
     public void brakeOff() {
