@@ -1,7 +1,10 @@
 package frc.robot.subsystems.superstructure;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.elevator.Elevator;
@@ -16,57 +19,63 @@ public class Superstructure {
     private static final Roller roller = RobotContainer.m_roller;
 
     public static Command setSuperstructureGoal(SuperstructureGoal goal) {
-        return Commands.sequence(elevator.setElevatorHeightProfiled(goal.elevator),
-                elevator.extendWaitCommand(goal.elevator - 7.0),
-                wrist.setWristAngleProfiled(goal.wrist));
+        return Commands.sequence(
+            elevator.setElevatorHeightProfiled(goal.elevator),
+            //elevator.extendWaitCommand(goal.elevator - 7.0),
+            wrist.setWristAngleProfiled(goal.wrist));
     }
 
     public static Command epsilonWaitCommand() {
         return Commands.sequence(elevator.epsilonWaitCommand());
     }
 
-    public static Command setSuperstructureScore(NodeLevel level, GamePiece piece) {
-        SuperstructureGoal goal;
-        if (piece == GamePiece.CUBE) {
-            switch (level) {
+    public static Command setSuperstructureScore(Supplier<NodeLevel> level, Supplier<GamePiece> piece) {
+        SuperstructureGoal goal = SuperstructureGoal.L1_SCORE;
+        if (piece.get() == GamePiece.CUBE) {
+            switch (level.get()) {
                 case HYBRID:
                     goal = SuperstructureGoal.L1_SCORE;
+                    break;
                 case MID:
                     goal = SuperstructureGoal.L2_CUBE;
+                    break;
                 case HIGH:
                     goal = SuperstructureGoal.L3_CUBE;
-                default:
-                    goal = SuperstructureGoal.L1_SCORE;
+                    break;
             }
         } else {
-            switch (level) {
+            switch (level.get()) {
                 case HYBRID:
                     goal = SuperstructureGoal.L1_SCORE;
+                    break;
                 case MID:
                     goal = SuperstructureGoal.L2_CONE;
+                    break;
                 case HIGH:
                     goal = SuperstructureGoal.L3_CONE;
-                default:
-                    goal = SuperstructureGoal.L1_SCORE;
+                    break;
             }
         }
         return setSuperstructureGoal(goal);
     }
 
     public static Command setScoreTeleop() {
-        return setSuperstructureScore(ObjectiveTracker.getNodeLevel(),
-                ObjectiveTracker.getGamePiece())
-                        .finallyDo(interupted -> setSuperstructureGoal(SuperstructureGoal.STOW));
+        return setSuperstructureScore(ObjectiveTracker::getNodeLevel,
+                ObjectiveTracker::getGamePiece);
+    }
+
+    public static Command setStow() {
+        return setSuperstructureGoal(SuperstructureGoal.STOW);
     }
 
     public static Command scoreCubeLevel(NodeLevel level) {
-        return Commands.sequence(setSuperstructureScore(level, GamePiece.CUBE),
+        return Commands.sequence(setSuperstructureScore(() -> level, () -> GamePiece.CUBE),
                 epsilonWaitCommand().withTimeout(3.0), roller.scoreCube(),
                 setSuperstructureGoal(SuperstructureGoal.STOW));
     }
 
     public static Command scoreConeLevel(NodeLevel level) {
-        return Commands.sequence(setSuperstructureScore(level, GamePiece.CONE),
+        return Commands.sequence(setSuperstructureScore(() -> level, () -> GamePiece.CONE),
                 epsilonWaitCommand().withTimeout(3.0), roller.scoreCone(),
                 setSuperstructureGoal(SuperstructureGoal.STOW));
     }
@@ -101,32 +110,32 @@ public class Superstructure {
 
     public static class SuperstructureGoal {
 
-        public static final SuperstructureGoal STOW = new SuperstructureGoal(-9.3, 0.0);
+        public static final SuperstructureGoal STOW = new SuperstructureGoal(0.0, 190.0);
 
         public static final SuperstructureGoal GROUND_CONE_INTAKE =
-                new SuperstructureGoal(-9.3, 0.0);
+                new SuperstructureGoal(5.0, 0.0);
         public static final SuperstructureGoal GROUND_CUBE_INTAKE =
-                new SuperstructureGoal(-9.3, 0.0);
+                new SuperstructureGoal(5.0, 0.0);
 
 
         public static final SuperstructureGoal SHELF_CONE_INTAKE =
-                new SuperstructureGoal(60.113914, 0.579607);
+                new SuperstructureGoal(5.0, 0.579607);
         public static final SuperstructureGoal SHELF_CUBE_INTAKE =
-                new SuperstructureGoal(60.113914, 0.579607);
+                new SuperstructureGoal(5.0, 0.579607);
 
 
         public static final SuperstructureGoal SLIDE_CUBE_INTAKE =
-                new SuperstructureGoal(50.0, 0.00);
+                new SuperstructureGoal(5.0, 0.00);
 
-        public static final SuperstructureGoal SCORE_STANDBY = new SuperstructureGoal(39.8, 0.0);
+        public static final SuperstructureGoal SCORE_STANDBY = new SuperstructureGoal(5.0, 0.0);
 
-        public static final SuperstructureGoal L1_SCORE = new SuperstructureGoal(15.0, 0.0);
+        public static final SuperstructureGoal L1_SCORE = new SuperstructureGoal(10.0, 110.0);
 
-        public static final SuperstructureGoal L2_CONE = new SuperstructureGoal(39.8, 0.556);
-        public static final SuperstructureGoal L2_CUBE = new SuperstructureGoal(39.8, 0.556);
+        public static final SuperstructureGoal L2_CONE = new SuperstructureGoal(12.0, 0.556);
+        public static final SuperstructureGoal L2_CUBE = new SuperstructureGoal(12.0, 0.556);
 
-        public static final SuperstructureGoal L3_CONE = new SuperstructureGoal(39.8, 1.04);
-        public static final SuperstructureGoal L3_CUBE = new SuperstructureGoal(39.8, 1.04);
+        public static final SuperstructureGoal L3_CONE = new SuperstructureGoal(20.0, 1.04);
+        public static final SuperstructureGoal L3_CUBE = new SuperstructureGoal(20.0, 1.04);
 
         public double elevator; // inches
         public double wrist; // degrees

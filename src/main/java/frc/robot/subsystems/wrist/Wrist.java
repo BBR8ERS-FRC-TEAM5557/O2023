@@ -11,6 +11,9 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -60,6 +63,21 @@ public class Wrist extends SubsystemBase {
         // Manual Home Trigger
         new Trigger(() -> RobotContainer.m_operator.getBButton()).whileTrue(homeWrist());
 
+        ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Wrist");
+        shuffleboardTab.addNumber("Position Internal", () -> Util.truncate(getState().position, 2))
+                .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab.addNumber("Position Absolute", () -> Util.truncate(m_inputs.WristAbsolutePositionDeg, 2))
+                .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab
+                .addNumber("Velocity", () -> Util.truncate(getState().velocity, 2))
+                .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab
+                .addNumber("Demand", () -> Util.truncate(m_demand, 2))
+                .withWidget(BuiltInWidgets.kGraph);
+
+        shuffleboardTab.addString("Control Mode", () -> getControlMode().name());
+        shuffleboardTab.addString("Command",
+                () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "NONE");
     }
 
     @Override
@@ -157,5 +175,9 @@ public class Wrist extends SubsystemBase {
     public Command epsilonWaitCommand() {
         return new WaitUntilCommand(
                 () -> Math.abs(getState().position - m_goal.position) < kPadding);
+    }
+
+    public ControlMode getControlMode() {
+        return m_mode;
     }
 }

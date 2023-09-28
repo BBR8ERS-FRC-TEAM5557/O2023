@@ -5,6 +5,9 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -21,18 +24,16 @@ public class Elevator extends SubsystemBase {
     private final ElevatorIOInputs m_inputs = new ElevatorIOInputs();
 
     private ControlMode m_mode = ControlMode.OPEN_LOOP;
-    private TrapezoidProfile.Constraints m_constraints =
-            new TrapezoidProfile.Constraints(kCruiseVelocity, (kCruiseVelocity / kTimeToCruise));
+    private TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(kCruiseVelocity,
+            (kCruiseVelocity / kTimeToCruise));
     private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
     private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
     private TrapezoidProfile m_profile = new TrapezoidProfile(m_constraints, m_goal);
     private double m_profileTimestamp = 0.0;
     private double m_demand = 0.0;
 
-    public final TunableNumber cruiseVelocity =
-            new TunableNumber("Elevator/cruiseVelocity", kCruiseVelocity);
-    public final TunableNumber desiredTimeToSpeed =
-            new TunableNumber("Elevator/desiredTimeToSpeed", kTimeToCruise);
+    public final TunableNumber cruiseVelocity = new TunableNumber("Elevator/cruiseVelocity", kCruiseVelocity);
+    public final TunableNumber desiredTimeToSpeed = new TunableNumber("Elevator/desiredTimeToSpeed", kTimeToCruise);
 
     public enum ControlMode {
         OPEN_LOOP, VOLTAGE, POSITION, MOTION_PROFILE
@@ -46,7 +47,21 @@ public class Elevator extends SubsystemBase {
         new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode == ControlMode.MOTION_PROFILE)
                 && (Util.epsilonEquals(m_demand, kEncoderHomePosition, 1.0))
                 && (Util.epsilonEquals(m_inputs.ElevatorHeightInches, kEncoderHomePosition, 1.0)))
-                        .onTrue(homeElevator());
+                .onTrue(homeElevator());
+
+        ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Elevator");
+        shuffleboardTab.addNumber("Position", () -> Util.truncate(getState().position, 2))
+                .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab
+                .addNumber("Velocity", () -> Util.truncate(getState().velocity, 2))
+                .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab
+                .addNumber("Demand", () -> Util.truncate(m_demand, 2))
+                .withWidget(BuiltInWidgets.kGraph);
+
+        shuffleboardTab.addString("Control Mode", () -> getControlMode().name());
+        shuffleboardTab.addString("Command",
+                () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "NONE");
     }
 
     @Override
@@ -64,6 +79,11 @@ public class Elevator extends SubsystemBase {
         } else {
             m_setpoint = m_profile.calculate(Timer.getFPGATimestamp() - m_profileTimestamp);
             m_io.setHeightInches(m_setpoint.position, m_setpoint.velocity);
+        }
+
+        if (cruiseVelocity.hasChanged(cruiseVelocity.hashCode())
+                || desiredTimeToSpeed.hasChanged(desiredTimeToSpeed.hashCode())) {
+            m_constraints = new TrapezoidProfile.Constraints(cruiseVelocity.get(), (cruiseVelocity.get() / desiredTimeToSpeed.get()));
         }
     }
 
@@ -143,5 +163,9 @@ public class Elevator extends SubsystemBase {
     public Command epsilonWaitCommand() {
         return new WaitUntilCommand(
                 () -> Math.abs(getState().position - m_goal.position) < kPadding);
+    }
+
+    public ControlMode getControlMode() {
+        return m_mode;
     }
 }

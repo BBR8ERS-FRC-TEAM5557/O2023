@@ -10,9 +10,9 @@ import frc.lib.team5557.util.CANDeviceId.CANDeviceType;
 import frc.robot.Constants;
 
 public class WristConstants {
-    public static final double kGearReduction = 65.0;
+    public static final double kGearReduction = 36.0;
     public static final double kFirstSprocketTeethCount = 12.0; //teeth
-    public static final double kSecondSprocketTeethCount = 32.0; //teeth
+    public static final double kSecondSprocketTeethCount = 48.0; //teeth
     public static final double kRotationsPerDegree = kGearReduction * (kSecondSprocketTeethCount / kFirstSprocketTeethCount) / 360.0;
 
     public static final double kEncoderHomePosition = 0.0; //degrees
@@ -23,8 +23,8 @@ public class WristConstants {
     public static final double kHomeVoltage = 1.0;
     public static final double kHomeAmpsThreshold = 20.0;
 
-    public static final double kMinAngle = -20.0; //degrees
-    public static final double kMaxAngle = 100.0; //degrees
+    public static final double kMinAngle = -180.0; //degrees
+    public static final double kMaxAngle = 360.0; //degrees
 
     public static final double kWristkP = 0.0;
     public static final double kWristkI = 0.0;
@@ -58,7 +58,7 @@ public class WristConstants {
         kMasterMotorConfiguration.limits = kLimitConfiguration;
 
         kMasterMotorConfiguration.kVoltageCompensation = 12.0;
-        kMasterMotorConfiguration.kShouldInvert = false;
+        kMasterMotorConfiguration.kShouldInvert = true;
         kMasterMotorConfiguration.kIdleMode = IdleMode.kBrake;
         kMasterMotorConfiguration.kOpenLoopRampRate = 1.0;
         kMasterMotorConfiguration.kClosedLoopRampRate = 0.5;

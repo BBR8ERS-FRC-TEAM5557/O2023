@@ -10,8 +10,8 @@ public interface WristIO {
         public double WristInternalPositionDeg = 0.0;
         public double WristInternalVelocityDegPerSec = 0.0;
         public double WristAppliedVolts = 0.0;
-        public double[] WristCurrentAmps = new double[] {};
-        public double[] WristTempCelsius = new double[] {};
+        public double[] WristCurrentAmps = new double[] {0.0};
+        public double[] WristTempCelsius = new double[] {0.0};
 
         @Override
         public void toLog(LogTable table) {

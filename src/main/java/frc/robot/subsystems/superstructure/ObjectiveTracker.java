@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class ObjectiveTracker {
-    private static NodeLevel nodeLevel = NodeLevel.HIGH;
+    private static NodeLevel nodeLevel = NodeLevel.HYBRID;
     private static GamePiece gamePiece = GamePiece.CONE;
 
 
@@ -25,8 +25,10 @@ public class ObjectiveTracker {
                         break;
                     case MID:
                         nodeLevel = NodeLevel.HYBRID;
+                        break;
                     case HIGH:
                         nodeLevel = NodeLevel.MID;
+                        break;
                 }
                 break;
 

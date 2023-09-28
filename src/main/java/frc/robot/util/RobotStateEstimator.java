@@ -3,6 +3,7 @@ package frc.robot.util;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -31,7 +32,6 @@ public class RobotStateEstimator extends VirtualSubsystem {
     private final Field2d m_field2d = new Field2d();
     private final Pose2d[] modulePoses = new Pose2d[4];
 
-
     public static RobotStateEstimator getInstance() {
         if (m_instance == null) {
             System.out.println("[Init] Creating RobotStateEstimator");
@@ -41,9 +41,9 @@ public class RobotStateEstimator extends VirtualSubsystem {
     }
 
     private SwerveDrivePoseEstimator m_poseEstimator;
-    private SwerveModulePosition[] m_lastModulePositions =
-            new SwerveModulePosition[] {new SwerveModulePosition(), new SwerveModulePosition(),
-                    new SwerveModulePosition(), new SwerveModulePosition()};
+    private SwerveModulePosition[] m_lastModulePositions = new SwerveModulePosition[] { new SwerveModulePosition(),
+            new SwerveModulePosition(),
+            new SwerveModulePosition(), new SwerveModulePosition() };
 
     private RobotStateEstimator() {
         m_poseEstimator = new SwerveDrivePoseEstimator(Swerve.m_kinematics, new Rotation2d(),
@@ -62,7 +62,7 @@ public class RobotStateEstimator extends VirtualSubsystem {
     }
 
     /** Records a new drive movement without gyro. */
-    public void addDriveData(double timestamp, SwerveModulePosition[] positions) {
+    public void addDriveData(SwerveModulePosition[] positions) {
         SwerveModulePosition[] wheelDeltas = new SwerveModulePosition[4];
         for (int i = 0; i < 4; i++) {
             wheelDeltas[i] = new SwerveModulePosition(
@@ -71,20 +71,21 @@ public class RobotStateEstimator extends VirtualSubsystem {
             m_lastModulePositions[i] = positions[i];
         }
         var twist = Swerve.m_kinematics.toTwist2d(wheelDeltas);
-        var simulatedGyroAngle =
-                Rotation2d.fromRadians(getPose().getRotation().getRadians() + twist.dtheta);
+        var simulatedGyroAngle = Rotation2d.fromRadians(getPose().getRotation().getRadians() + twist.dtheta);
 
-        addDriveData(timestamp, simulatedGyroAngle, positions);
+        addDriveData(simulatedGyroAngle, positions);
     }
 
     /** Records a new drive movement with gyro. */
-    public void addDriveData(double timestamp, Rotation2d gyroAngle,
-            SwerveModulePosition[] positions) {
-        m_poseEstimator.updateWithTime(timestamp, gyroAngle, positions);
+    public void addDriveData(Rotation2d gyroAngle, SwerveModulePosition[] positions) {
+        for (int i = 0; i < 4; i++) {
+            m_lastModulePositions[i] = positions[i];
+        }
+        m_poseEstimator.updateWithTime(MathSharedStore.getTimestamp(), gyroAngle, positions);
     }
 
     public void addVisionData(List<TimestampedVisionUpdate> visionData) {
-        for(var update : visionData) {
+        for (var update : visionData) {
             m_poseEstimator.addVisionMeasurement(update.pose(), update.timestamp(), update.stdDevs());
         }
     }
@@ -108,7 +109,7 @@ public class RobotStateEstimator extends VirtualSubsystem {
             double clampedYPosition = MathUtil.clamp(estimatedYPos, 0.0, 8.35);
             double clampedXPosition = MathUtil.clamp(estimatedXPos, 0.0, Units.feetToMeters(52.0));
             this.setPose(new Pose2d(clampedXPosition, clampedYPosition,
-                    m_poseEstimator.getEstimatedPosition().getRotation()));
+                    getPose().getRotation()));
         }
     }
 
@@ -145,7 +146,10 @@ public class RobotStateEstimator extends VirtualSubsystem {
         }
     }
 
-    /** Represents a single vision pose with a timestamp and associated standard deviations. */
+    /**
+     * Represents a single vision pose with a timestamp and associated standard
+     * deviations.
+     */
     public static class TimestampedVisionUpdate {
         private final double timestamp;
         private final Pose2d pose;

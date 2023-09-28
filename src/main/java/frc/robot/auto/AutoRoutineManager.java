@@ -108,9 +108,9 @@ public class AutoRoutineManager {
                 .andThen(Superstructure.intakeGroundCone().withTimeout(3.0)));
 
         m_eventMap.put("prepScoreHighCone", new PrintCommand("[Scoring High Cone!!!]")
-                .andThen(Superstructure.setSuperstructureScore(NodeLevel.HIGH, GamePiece.CONE)));
+                .andThen(Superstructure.setSuperstructureScore(() -> NodeLevel.HIGH, () -> GamePiece.CONE)));
         m_eventMap.put("prepScoreHighCube", new PrintCommand("[Scoring High Cube!!!]")
-                .andThen(Superstructure.setSuperstructureScore(NodeLevel.HIGH, GamePiece.CUBE)));
+                .andThen(Superstructure.setSuperstructureScore(() -> NodeLevel.HIGH, () -> GamePiece.CUBE)));
     }
 
     private Command getFollowComand(PathPlannerTrajectory path) {

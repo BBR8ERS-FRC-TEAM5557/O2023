@@ -38,20 +38,18 @@ public class Swerve extends SubsystemBase {
 
     private final Module[] m_modules = new Module[4]; // FL, FR, BL, BR
 
-    public static final SwerveDriveKinematics m_kinematics =
-            new SwerveDriveKinematics(kSwerveModuleLocations);
-    private SwerveSetpointGenerator m_setpointGenerator =
-            new SwerveSetpointGenerator(m_kinematics, kSwerveModuleLocations);
+    public static final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(kSwerveModuleLocations);
+    private SwerveSetpointGenerator m_setpointGenerator = new SwerveSetpointGenerator(m_kinematics,
+            kSwerveModuleLocations);
     private ControlMode m_mode = ControlMode.VELOCITY;
     private KinematicLimits m_kinematicLimits = kUncappedLimits;
     private ChassisSpeeds m_desChassisSpeeds = new ChassisSpeeds();
-    private SwerveSetpoint m_swerveSetpoint =
-            new SwerveSetpoint(m_desChassisSpeeds, new SwerveModuleState[] {new SwerveModuleState(),
-                    new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState()});
+    private SwerveSetpoint m_swerveSetpoint = new SwerveSetpoint(m_desChassisSpeeds,
+            new SwerveModuleState[] { new SwerveModuleState(),
+                    new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState() });
     private Twist2d m_fieldVelocity = new Twist2d();
     private int m_systemCheckModuleNumber = 0;
-    private SwerveModuleSystemCheckRequest m_systemCheckState =
-            SwerveModuleSystemCheckRequest.DO_NOTHING;
+    private SwerveModuleSystemCheckRequest m_systemCheckState = SwerveModuleSystemCheckRequest.DO_NOTHING;
     private double m_characterizationVolts = 0.0;
 
     private MovingAverage m_smoothedPitchVelocity = new MovingAverage(10);
@@ -59,7 +57,6 @@ public class Swerve extends SubsystemBase {
     public enum ControlMode {
         X_OUT, OPEN_LOOP, VELOCITY, PATH_FOLLOWING, CHARACTERIZATION, SYSTEMS_CHECK
     }
-
 
     public Swerve(GyroIO gyroIO, ModuleIO flModuleIO, ModuleIO frModuleIO, ModuleIO blModuleIO,
             ModuleIO brModuleIO) {
@@ -70,14 +67,18 @@ public class Swerve extends SubsystemBase {
         m_modules[2] = new Module(blModuleIO, 2);
         m_modules[3] = new Module(brModuleIO, 3);
 
-
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Swerve");
-        shuffleboardTab.addNumber("Heading", () -> Util.truncate(getYaw().getDegrees(), 2)).withWidget(BuiltInWidgets.kGyro);
-        shuffleboardTab.addNumber("Velocity", () -> Util.truncate(Math.hypot(getFieldVelocity().dx, getFieldVelocity().dy), 2)).withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab.addNumber("Heading", () -> Util.truncate(getYaw().getDegrees(), 2))
+                .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab
+                .addNumber("Velocity", () -> Util.truncate(Math.hypot(getFieldVelocity().dx, getFieldVelocity().dy), 2))
+                .withWidget(BuiltInWidgets.kGraph);
 
-        shuffleboardTab.addNumber("Velocity Kinematic Limit", () -> getKinematicLimit().kMaxDriveVelocity).withWidget(BuiltInWidgets.kNumberBar);
+        shuffleboardTab.addNumber("Velocity Kinematic Limit", () -> getKinematicLimit().kMaxDriveVelocity)
+                .withWidget(BuiltInWidgets.kNumberBar);
         shuffleboardTab.addString("Control Mode", () -> getControlMode().name());
-        shuffleboardTab.addString("Command", () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "NONE");
+        shuffleboardTab.addString("Command",
+                () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "NONE");
     }
 
     @Override
@@ -134,7 +135,7 @@ public class Swerve extends SubsystemBase {
 
             // Clear setpoint logs
             Logger.getInstance().recordOutput(kSubsystemName + "/ModuleStates/Setpoints",
-            new double[] {});
+                    new double[] {});
             Logger.getInstance().recordOutput(kSubsystemName + "/ModuleStates/SetpointsOptimized",
                     new double[] {});
         } else {
@@ -151,6 +152,8 @@ public class Swerve extends SubsystemBase {
             m_swerveSetpoint = m_setpointGenerator.generateSetpoint(m_kinematicLimits,
                     m_swerveSetpoint, adjustedSpeeds, Robot.defaultPeriodSecs);
 
+            m_swerveSetpoint.moduleStates = m_kinematics.toSwerveModuleStates(adjustedSpeeds);
+
             // Send setpoints to modules
             SwerveModuleState[] optimizedStates = new SwerveModuleState[4];
 
@@ -161,8 +164,7 @@ public class Swerve extends SubsystemBase {
                 }
             } else {
                 for (int i = 0; i < 4; i++) {
-                    optimizedStates[i] =
-                            m_modules[i].runSetpoint(m_swerveSetpoint.moduleStates[i], true, false);
+                    optimizedStates[i] = m_modules[i].runSetpoint(m_swerveSetpoint.moduleStates[i], true, false);
                 }
             }
 
@@ -190,18 +192,18 @@ public class Swerve extends SubsystemBase {
 
         // Update Pose Estimator
         if (m_gyroInputs.connected) {
-            RobotStateEstimator.getInstance().addDriveData(Timer.getFPGATimestamp(),
+            RobotStateEstimator.getInstance().addDriveData(
                     getRawGyroYaw().orElse(getYaw()), measuredPositions);
         } else {
-            RobotStateEstimator.getInstance().addDriveData(Timer.getFPGATimestamp(),
+            RobotStateEstimator.getInstance().addDriveData(
                     measuredPositions);
         }
 
         // Update field velocity
         ChassisSpeeds chassisSpeeds = m_kinematics.toChassisSpeeds(measuredStates);
-        Translation2d linearFieldVelocity =
-                new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
-                        .rotateBy(getYaw());
+        Translation2d linearFieldVelocity = new Translation2d(chassisSpeeds.vxMetersPerSecond,
+                chassisSpeeds.vyMetersPerSecond)
+                .rotateBy(getYaw());
         m_fieldVelocity = new Twist2d(linearFieldVelocity.getX(), linearFieldVelocity.getY(),
                 m_gyroInputs.connected ? m_gyroInputs.yawVelocityRadPerSec
                         : chassisSpeeds.omegaRadiansPerSecond);

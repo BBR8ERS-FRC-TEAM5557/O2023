@@ -15,17 +15,17 @@ public class ElevatorConstants {
     public static final double kRotationsPerInch = kGearReduction / (kSprocketPitchDiameter * Math.PI);
 
     public static final double kPadding = 0.5; // inches
-    public static final double kCruiseVelocity = 20.0; // inches/sec
-    public static final double kTimeToCruise = 1.0; // sec
+    public static final double kCruiseVelocity = 50.0; // inches/sec
+    public static final double kTimeToCruise = 0.25; // sec
 
     public static final double kEncoderHomePosition = 0.0; //inches
-    public static final double kMinHeight = -10000000.0; //inches
+    public static final double kMinHeight = 0.0; //inches
     public static final double kMaxHeight = 30.0; //inches
 
     public static final double kHomeVoltage = 4.0;
     public static final double kHomeAmpsThreshold = 30.0;
 
-    public static final double kElevatorkP = 0.0;
+    public static final double kElevatorkP = 0.05;
     public static final double kElevatorkI = 0.0;
     public static final double kElevatorkD = 0.0;
 
@@ -60,7 +60,7 @@ public class ElevatorConstants {
         kMasterMotorConfiguration.kVoltageCompensation = 12.0;
         kMasterMotorConfiguration.kSmartCurrentLimit = 60.0;
         kMasterMotorConfiguration.kOpenLoopRampRate = 1.0;
-        kMasterMotorConfiguration.kClosedLoopRampRate = 0.5;
+        kMasterMotorConfiguration.kClosedLoopRampRate = 0.25;
         kMasterMotorConfiguration.kShouldInvert = false;
         kMasterMotorConfiguration.kIdleMode = IdleMode.kBrake;
 
@@ -74,7 +74,7 @@ public class ElevatorConstants {
         kSlaveMotorConfiguration.kVoltageCompensation = 12.0;
         kSlaveMotorConfiguration.kSmartCurrentLimit = 60.0;
         kSlaveMotorConfiguration.kOpenLoopRampRate = 1.0;
-        kSlaveMotorConfiguration.kClosedLoopRampRate = 0.5;
+        kSlaveMotorConfiguration.kClosedLoopRampRate = 0.25;
         kSlaveMotorConfiguration.kShouldInvert = true;
         kSlaveMotorConfiguration.kIdleMode = IdleMode.kBrake;
     }

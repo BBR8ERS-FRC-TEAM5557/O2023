@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -37,6 +41,9 @@ import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.subsystems.wrist.WristIO;
 import frc.robot.subsystems.wrist.WristIOSparkMax;
 import frc.robot.util.DriveMotionPlanner;
+import frc.robot.util.RobotStateEstimator;
+import frc.robot.util.Util;
+
 import static frc.robot.Constants.*;
 import static frc.robot.Constants.RobotMap.*;
 
@@ -49,44 +56,62 @@ public class RobotContainer {
     public static Wrist m_wrist;
     public static Roller m_roller;
 
+    public static RobotStateEstimator m_stateEstimator;
+
     public static AutoRoutineManager m_autoManager;
     public static SystemsCheckManager m_systemCheckManager;
 
     public RobotContainer() {
         if (kIsReal) {
-            m_swerve = new Swerve(new GyroIOPigeon2(),
-                    new ModuleIOSparkMax(0, kFLDriveMotor, kFLTurnMotor, kFLCancoder, kFLOffset),
-                    new ModuleIOSparkMax(1, kFRDriveMotor, kFRTurnMotor, kFRCancoder, kFROffset),
-                    new ModuleIOSparkMax(2, kBLDriveMotor, kBLTurnMotor, kBLCancoder, kBLOffset),
-                    new ModuleIOSparkMax(3, kBRDriveMotor, kBRTurnMotor, kBRCancoder, kBROffset));
-            // m_elevator = new Elevator(new ElevatorIOSparkMax());
-            // m_wrist = new Wrist(new WristIOSparkMax());
+            /*
+             * m_swerve = new Swerve(new GyroIOPigeon2(),
+             * new ModuleIOSparkMax(0, kFLDriveMotor, kFLTurnMotor, kFLCancoder, kFLOffset),
+             * new ModuleIOSparkMax(1, kFRDriveMotor, kFRTurnMotor, kFRCancoder, kFROffset),
+             * new ModuleIOSparkMax(2, kBLDriveMotor, kBLTurnMotor, kBLCancoder, kBLOffset),
+             * new ModuleIOSparkMax(3, kBRDriveMotor, kBRTurnMotor, kBRCancoder,
+             * kBROffset));
+             */
+            //m_elevator = new Elevator(new ElevatorIOSparkMax());
+            m_wrist = new Wrist(new WristIOSparkMax());
             // m_roller = new Roller(new RollerIOSparkMax());
         } else {
-            m_swerve = new Swerve(new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(),
+            m_swerve = new Swerve(new GyroIO() {
+            }, new ModuleIOSim(), new ModuleIOSim(),
                     new ModuleIOSim(), new ModuleIOSim());
         }
 
         // Instantiate missing subsystems
         if (m_swerve == null) {
-            m_swerve = new Swerve(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {},
-                    new ModuleIO() {}, new ModuleIO() {});
+            m_swerve = new Swerve(new GyroIO() {
+            }, new ModuleIO() {
+            }, new ModuleIO() {
+            },
+                    new ModuleIO() {
+                    }, new ModuleIO() {
+                    });
         }
         if (m_elevator == null) {
-            m_elevator = new Elevator(new ElevatorIO() {});
+            m_elevator = new Elevator(new ElevatorIO() {
+            });
         }
         if (m_wrist == null) {
-            m_wrist = new Wrist(new WristIO() {});
+            m_wrist = new Wrist(new WristIO() {
+            });
         }
         if (m_roller == null) {
-            m_roller = new Roller(new RollerIO() {});
+            m_roller = new Roller(new RollerIO() {
+            });
         }
 
         m_autoManager = new AutoRoutineManager(m_swerve, m_elevator);
         m_systemCheckManager = new SystemsCheckManager(m_swerve);
+        m_stateEstimator = RobotStateEstimator.getInstance();
         DriveMotionPlanner.configureControllers();
 
         configureBindings();
+
+        ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Driver");
+        shuffleboardTab.addString("Node Type", () -> ObjectiveTracker.getNodeLevel().name() + " " + ObjectiveTracker.getGamePiece().name());
     }
 
     private void configureBindings() {
@@ -94,9 +119,11 @@ public class RobotContainer {
         System.out.println("[Init] Binding controls");
         DriverStation.silenceJoystickConnectionWarning(true);
 
-
         m_swerve.setDefaultCommand(new TeleopDrive(this::getForwardInput, this::getStrafeInput,
                 this::getRotationInput, m_driver::getRightBumper));
+
+        // Reset swerve heading
+        new Trigger(m_driver::getStartButton).onTrue(new InstantCommand(() -> m_stateEstimator.setPose(new Pose2d())));
 
         // Driver sets cone intake
         new Trigger(m_driver::getLeftBumper)
@@ -128,7 +155,8 @@ public class RobotContainer {
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
                 .onFalse(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kUncappedLimits)))
-                .whileTrue(Superstructure.setScoreTeleop());
+                .whileTrue(Superstructure.setScoreTeleop())
+                .onFalse(Superstructure.setStow());
 
         // Ejects gamepiece when operator presses A button
         new Trigger(m_operator::getAButton).onTrue(new ConditionalCommand(m_roller.scoreCone(),
@@ -140,22 +168,17 @@ public class RobotContainer {
         new Trigger(() -> m_operator.getPOV() == 180)
                 .onTrue(ObjectiveTracker.shiftNodeCommand(Direction.DOWN));
 
-
         // Manual Elevator
         new Trigger(m_operator::getLeftStickButton).whileTrue(m_elevator.homeElevator());
 
         new Trigger(() -> m_operator.getRightBumper() && m_operator.getLeftBumper())
                 .whileTrue(m_elevator.runElevatorOpenLoop(() -> getElevatorJogger()))
-                .onFalse(m_elevator.runElevatorOpenLoop(() -> 0.0));
-
+                .whileTrue(m_wrist.runWristOpenLoop(() -> getWristJogger()))
+                .onFalse(m_elevator.runElevatorOpenLoop(() -> 0.0))
+                .onFalse(m_wrist.runWristOpenLoop(() -> 0.0));
 
         // Manual Wrist
         new Trigger(m_operator::getRightStickButton).whileTrue(m_wrist.homeWrist());
-
-        new Trigger(() -> m_operator.getRightBumper() && m_operator.getLeftBumper())
-                .whileTrue(m_wrist.runWristOpenLoop(() -> getWristJogger()));
-
-
 
         // Endgame alerts
         new Trigger(() -> DriverStation.isTeleopEnabled() && DriverStation.getMatchTime() > 0.0
@@ -171,23 +194,23 @@ public class RobotContainer {
 
         new Trigger(() -> DriverStation.isTeleopEnabled() && DriverStation.getMatchTime() > 0.0
                 && DriverStation.getMatchTime() <= Math.round(15.0))
-                        .onTrue(Commands.sequence(Commands.run(() -> {
-                            LEDs.getInstance().endgameAlert = true;
-                            m_driver.setRumble(RumbleType.kBothRumble, 1.0);
-                            m_operator.setRumble(RumbleType.kBothRumble, 1.0);
-                        }).withTimeout(0.5), Commands.run(() -> {
-                            LEDs.getInstance().endgameAlert = false;
-                            m_driver.setRumble(RumbleType.kBothRumble, 0.0);
-                            m_operator.setRumble(RumbleType.kBothRumble, 0.0);
-                        }).withTimeout(0.5), Commands.run(() -> {
-                            LEDs.getInstance().endgameAlert = true;
-                            m_driver.setRumble(RumbleType.kBothRumble, 1.0);
-                            m_operator.setRumble(RumbleType.kBothRumble, 1.0);
-                        }).withTimeout(0.5), Commands.run(() -> {
-                            LEDs.getInstance().endgameAlert = false;
-                            m_driver.setRumble(RumbleType.kBothRumble, 0.0);
-                            m_operator.setRumble(RumbleType.kBothRumble, 0.0);
-                        }).withTimeout(1.0)));
+                .onTrue(Commands.sequence(Commands.run(() -> {
+                    LEDs.getInstance().endgameAlert = true;
+                    m_driver.setRumble(RumbleType.kBothRumble, 1.0);
+                    m_operator.setRumble(RumbleType.kBothRumble, 1.0);
+                }).withTimeout(0.5), Commands.run(() -> {
+                    LEDs.getInstance().endgameAlert = false;
+                    m_driver.setRumble(RumbleType.kBothRumble, 0.0);
+                    m_operator.setRumble(RumbleType.kBothRumble, 0.0);
+                }).withTimeout(0.5), Commands.run(() -> {
+                    LEDs.getInstance().endgameAlert = true;
+                    m_driver.setRumble(RumbleType.kBothRumble, 1.0);
+                    m_operator.setRumble(RumbleType.kBothRumble, 1.0);
+                }).withTimeout(0.5), Commands.run(() -> {
+                    LEDs.getInstance().endgameAlert = false;
+                    m_driver.setRumble(RumbleType.kBothRumble, 0.0);
+                    m_operator.setRumble(RumbleType.kBothRumble, 0.0);
+                }).withTimeout(1.0)));
 
     }
 
@@ -200,23 +223,23 @@ public class RobotContainer {
     }
 
     public double getForwardInput() {
-        return -square(deadband(m_driver.getLeftY(), 0.1));
+        return -square(deadband(m_driver.getLeftY(), 0.15));
     }
 
     public double getStrafeInput() {
-        return -square(deadband(m_driver.getLeftX(), 0.1));
+        return -square(deadband(m_driver.getLeftX(), 0.15));
     }
 
     public double getRotationInput() {
-        return -square(deadband(m_driver.getRightX(), 0.1));
+        return -square(deadband(m_driver.getRightX(), 0.15));
     }
 
     public double getElevatorJogger() {
-        return -square(deadband(m_operator.getLeftY(), 0.1));
+        return -square(deadband(m_operator.getLeftY(), 0.15));
     }
 
     public double getWristJogger() {
-        return -square(deadband(m_operator.getRightY(), 0.1));
+        return -square(deadband(m_operator.getRightY(), 0.15));
     }
 
     private static double deadband(double value, double tolerance) {

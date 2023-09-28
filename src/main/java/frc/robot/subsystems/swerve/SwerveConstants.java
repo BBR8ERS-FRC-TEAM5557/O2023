@@ -31,7 +31,7 @@ public class SwerveConstants {
     public static final double kDriveGearReduction = (50.0 / 14.0) * (17.0 / 27.0) * ( 45.0 / 15.0);
     public static final double kWheelCircumference = Units.inchesToMeters(4.0) * Math.PI;
 
-    public static final double kAnglekP = 0.6; // FIXME: error(rotations) * kP = volts -> kp = 0.6 = 12.0 volts / 20 rotations
+    public static final double kAnglekP = 0.3; // FIXME: error(rotations) * kP = volts -> kp = 0.6 = 12.0 volts / 20 rotations
     public static final double kAnglekI = 0.0;
     public static final double kAnglekD = 0.0;
 
@@ -109,7 +109,7 @@ public class SwerveConstants {
     static {
         kAngleMotorConfiguration.pid = kAnglePIDConfiguration;
 
-        kAngleMotorConfiguration.kShouldInvert = false;
+        kAngleMotorConfiguration.kShouldInvert = true;
         kAngleMotorConfiguration.kVoltageCompensation = 12.0;
         kAngleMotorConfiguration.kSmartCurrentLimit = 20.0;
         kAngleMotorConfiguration.kIdleMode = IdleMode.kBrake;

@@ -16,8 +16,13 @@ public interface GyroIO {
 
         @Override
         public void toLog(LogTable table) {
-            // TODO Auto-generated method stub
-            
+            table.put("Connected", connected);
+            table.put("rollPositionRad", rollPositionRad);
+            table.put("pitchPositionRad", pitchPositionRad);
+            table.put("yawPositionRad", yawPositionRad);
+            table.put("rollVelocityRadPerSec", rollVelocityRadPerSec);
+            table.put("pitchVelocityRadPerSec", pitchVelocityRadPerSec);
+            table.put("yawVelocityRadPerSec", yawVelocityRadPerSec);
         }
         @Override
         public void fromLog(LogTable table) {
