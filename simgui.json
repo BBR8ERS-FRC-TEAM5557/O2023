@@ -16,13 +16,10 @@
         "open": true
       },
       "Shuffleboard": {
-        "open": true
-      },
-      "SmartDashboard": {
-        "AutonomousChooser": {
-          "open": true
-        },
-        "TunableNumbers": {
+        "Driver": {
+          "Field": {
+            "open": true
+          },
           "open": true
         },
         "open": true
@@ -31,15 +28,6 @@
   },
   "NetworkTables Info": {
     "Clients": {
-      "open": true
-    },
-    "Server": {
-      "Publishers": {
-        "open": true
-      },
-      "Subscribers": {
-        "open": true
-      },
       "open": true
     },
     "visible": true

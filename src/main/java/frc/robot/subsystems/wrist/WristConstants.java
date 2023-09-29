@@ -23,8 +23,8 @@ public class WristConstants {
     public static final double kHomeVoltage = 1.0;
     public static final double kHomeAmpsThreshold = 20.0;
 
-    public static final double kMinAngle = -180.0; //degrees
-    public static final double kMaxAngle = 360.0; //degrees
+    public static final double kMinAngle = 170.0; //degrees
+    public static final double kMaxAngle = 270.0; //degrees
 
     public static final double kWristkP = 0.0;
     public static final double kWristkI = 0.0;

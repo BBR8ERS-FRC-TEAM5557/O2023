@@ -58,7 +58,7 @@ public class ElevatorConstants {
         kMasterMotorConfiguration.limits = kLimitConfiguration;
 
         kMasterMotorConfiguration.kVoltageCompensation = 12.0;
-        kMasterMotorConfiguration.kSmartCurrentLimit = 60.0;
+        kMasterMotorConfiguration.kSmartCurrentLimit = 40.0;
         kMasterMotorConfiguration.kOpenLoopRampRate = 1.0;
         kMasterMotorConfiguration.kClosedLoopRampRate = 0.25;
         kMasterMotorConfiguration.kShouldInvert = false;
@@ -72,7 +72,7 @@ public class ElevatorConstants {
         kSlaveMotorConfiguration.label = "Elevator Slave";
 
         kSlaveMotorConfiguration.kVoltageCompensation = 12.0;
-        kSlaveMotorConfiguration.kSmartCurrentLimit = 60.0;
+        kSlaveMotorConfiguration.kSmartCurrentLimit = 40.0;
         kSlaveMotorConfiguration.kOpenLoopRampRate = 1.0;
         kSlaveMotorConfiguration.kClosedLoopRampRate = 0.25;
         kSlaveMotorConfiguration.kShouldInvert = true;

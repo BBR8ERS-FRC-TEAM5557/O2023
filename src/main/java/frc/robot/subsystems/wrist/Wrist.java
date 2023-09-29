@@ -55,24 +55,26 @@ public class Wrist extends SubsystemBase {
         this.m_io = io;
 
         // Automatic Home Trigger
-        new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode == ControlMode.MOTION_PROFILE)
-                && (Util.epsilonEquals(m_demand, kEncoderHomePosition, 3.0))
-                && (Util.epsilonEquals(m_inputs.WristInternalPositionDeg, kEncoderHomePosition,
-                        3.0))).onTrue(homeWrist());
+        /*
+         * new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode ==
+         * ControlMode.MOTION_PROFILE) && (Util.epsilonEquals(m_demand, kEncoderHomePosition, 3.0))
+         * && (Util.epsilonEquals(m_inputs.WristInternalPositionDeg, kEncoderHomePosition,
+         * 3.0))).onTrue(homeWrist());
+         */
 
         // Manual Home Trigger
-        new Trigger(() -> RobotContainer.m_operator.getBButton()).whileTrue(homeWrist());
+        // new Trigger(() -> RobotContainer.m_operator.getBButton()).whileTrue(homeWrist());
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Wrist");
         shuffleboardTab.addNumber("Position Internal", () -> Util.truncate(getState().position, 2))
                 .withWidget(BuiltInWidgets.kGraph);
-        shuffleboardTab.addNumber("Position Absolute", () -> Util.truncate(m_inputs.WristAbsolutePositionDeg, 2))
-                .withWidget(BuiltInWidgets.kGraph);
         shuffleboardTab
-                .addNumber("Velocity", () -> Util.truncate(getState().velocity, 2))
+                .addNumber("Position Absolute",
+                        () -> Util.truncate(m_inputs.WristAbsolutePositionDeg, 2))
                 .withWidget(BuiltInWidgets.kGraph);
-        shuffleboardTab
-                .addNumber("Demand", () -> Util.truncate(m_demand, 2))
+        shuffleboardTab.addNumber("Velocity", () -> Util.truncate(getState().velocity, 2))
+                .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab.addNumber("Demand", () -> Util.truncate(m_demand, 2))
                 .withWidget(BuiltInWidgets.kGraph);
 
         shuffleboardTab.addString("Control Mode", () -> getControlMode().name());
@@ -95,6 +97,12 @@ public class Wrist extends SubsystemBase {
         } else {
             m_setpoint = m_profile.calculate(Timer.getFPGATimestamp() - m_profileTimestamp);
             m_io.setAngleDegrees(m_setpoint.position, m_setpoint.velocity);
+        }
+
+        if (cruiseVelocity.hasChanged(cruiseVelocity.hashCode())
+                || desiredTimeToSpeed.hasChanged(desiredTimeToSpeed.hashCode())) {
+            m_constraints = new TrapezoidProfile.Constraints(cruiseVelocity.get(),
+                    (cruiseVelocity.get() / desiredTimeToSpeed.get()));
         }
     }
 
