@@ -17,8 +17,8 @@ public class WristConstants {
 
     public static final double kEncoderHomePosition = 0.0; //degrees
     public static final double kPadding = 0.5; // degrees
-    public static final double kCruiseVelocity = 20.0; // degrees/sec
-    public static final double kTimeToCruise = 1.0; // sec
+    public static final double kCruiseVelocity = 150.0; // degrees/sec
+    public static final double kTimeToCruise = 0.1; // sec
 
     public static final double kHomeVoltage = 1.0;
     public static final double kHomeAmpsThreshold = 20.0;
@@ -26,7 +26,7 @@ public class WristConstants {
     public static final double kMinAngle = 170.0; //degrees
     public static final double kMaxAngle = 270.0; //degrees
 
-    public static final double kWristkP = 0.0;
+    public static final double kWristkP = 0.02;
     public static final double kWristkI = 0.0;
     public static final double kWristkD = 0.0;
 
@@ -37,8 +37,8 @@ public class WristConstants {
     
     public static final SoftLimitsConfiguration kLimitConfiguration = new SoftLimitsConfiguration();
     static {
-        kLimitConfiguration.kUpperLimit = degreesToRotations(kMaxAngle);
-        kLimitConfiguration.kLowerLimit = degreesToRotations(kMinAngle);
+        kLimitConfiguration.kUpperLimit = (kMaxAngle);
+        kLimitConfiguration.kLowerLimit = (kMinAngle);
     }
 
     public static final PIDConfiguration kPIDConfiguration = new PIDConfiguration();

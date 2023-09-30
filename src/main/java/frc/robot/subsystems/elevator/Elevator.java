@@ -24,6 +24,7 @@ public class Elevator extends SubsystemBase {
     private final ElevatorIOInputs m_inputs = new ElevatorIOInputs();
 
     private ControlMode m_mode = ControlMode.OPEN_LOOP;
+
     private TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(kCruiseVelocity,
             (kCruiseVelocity / kTimeToCruise));
     private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
@@ -58,6 +59,10 @@ public class Elevator extends SubsystemBase {
         shuffleboardTab
                 .addNumber("Demand", () -> Util.truncate(m_demand, 2))
                 .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab
+                .addNumber("Output", () -> Util.truncate(m_inputs.ElevatorAppliedVolts, 2))
+                .withWidget(BuiltInWidgets.kGraph);
+
 
         shuffleboardTab.addString("Control Mode", () -> getControlMode().name());
         shuffleboardTab.addString("Command",
@@ -79,6 +84,8 @@ public class Elevator extends SubsystemBase {
         } else {
             m_setpoint = m_profile.calculate(Timer.getFPGATimestamp() - m_profileTimestamp);
             m_io.setHeightInches(m_setpoint.position, m_setpoint.velocity);
+
+            Logger.getInstance().recordOutput("Elevator/Setpoint", m_setpoint.position);
         }
 
         if (cruiseVelocity.hasChanged(cruiseVelocity.hashCode())

@@ -89,7 +89,7 @@ public class SparkMaxFactory {
 
                 pid.setOutputRange(-config.pid.kMaxEffort, config.pid.kMaxEffort, 0);
                 pid.setIZone(config.pid.kTolerance * 2, 0);
-                pid.setIMaxAccum(1.0, 0);
+                pid.setIMaxAccum(5.0, 0);
             }
 
             if(config.limits != null) {

@@ -17,7 +17,6 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 public class ElevatorIOSparkMax implements ElevatorIO {
 
     private final CANSparkMax m_master;
-    private final CANSparkMax m_slave;
 
     private final RelativeEncoder m_encoder;
     private final SparkMaxPIDController m_pid;
@@ -30,17 +29,13 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     public ElevatorIOSparkMax() {
         System.out.println("[Init] Creating ElevatorIOSparkMax");
         m_master = SparkMaxFactory.createNEO(kMasterMotorConfiguration);
-        m_slave = SparkMaxFactory.createNEO(kSlaveMotorConfiguration);
-        m_slave.follow(m_master, false);
         BurnManager.burnFlash(m_master);
-        BurnManager.burnFlash(m_slave);
 
         m_encoder = m_master.getEncoder();
         m_pid = m_master.getPIDController();
 
         SparkMaxFactory.configFramesLeaderOrFollower(m_master);
         SparkMaxFactory.configFramesPositionBoost(m_master);
-        SparkMaxFactory.configFramesLeaderOrFollower(m_slave);
 
         m_feedforward = new ElevatorFeedforward(kElevatorkS, kElevatorkG, kElevatorkV, kElevatorkA);
     }
@@ -84,12 +79,10 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
     public void brakeOff() {
         m_master.setIdleMode(IdleMode.kCoast);
-        m_slave.setIdleMode(IdleMode.kCoast);
     }
 
     public void brakeOn() {
         m_master.setIdleMode(IdleMode.kBrake);
-        m_slave.setIdleMode(IdleMode.kBrake);
     }
 
     public void shouldEnableUpperLimit(boolean value) {

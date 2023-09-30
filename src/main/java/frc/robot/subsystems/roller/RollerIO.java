@@ -9,8 +9,8 @@ public interface RollerIO {
         
         public double rollerVelocityRPM = 0.0;
         public double rollerAppliedVolts = 0.0;
-        public double[] rollerCurrentAmps = new double[] {};
-        public double[] rollerTempCelcius = new double [] {};
+        public double[] rollerCurrentAmps = new double[] {0.0};
+        public double[] rollerTempCelcius = new double [] {0.0};
 
 
         @Override

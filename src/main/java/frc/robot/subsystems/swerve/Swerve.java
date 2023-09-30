@@ -311,6 +311,10 @@ public class Swerve extends SubsystemBase {
     public ControlMode getControlMode() {
         return m_mode;
     }
+    
+    public boolean isUnderKinematicLimit(KinematicLimits limits) {
+        return Math.hypot(getFieldVelocity().dx, getFieldVelocity().dy) < limits.kMaxDriveVelocity;
+    }
 
     public void setKinematicLimits(KinematicLimits limits) {
         m_kinematicLimits = limits;

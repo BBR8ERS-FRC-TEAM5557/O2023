@@ -22,7 +22,6 @@ public class WristIOSparkMax implements WristIO {
     private final RelativeEncoder m_encoder;
     private final SparkMaxAbsoluteEncoder m_absoluteEncoder;
     private final SparkMaxPIDController m_pid;
-
     private final ArmFeedforward m_feedforward;
 
     private final TunableNumber wristkP = new TunableNumber("Wrist/WristkP", kWristkP);
@@ -39,7 +38,7 @@ public class WristIOSparkMax implements WristIO {
         m_absoluteEncoder.setPositionConversionFactor(360.0);
         m_absoluteEncoder.setVelocityConversionFactor(360.0);
         m_absoluteEncoder.setInverted(true);
-        m_absoluteEncoder.setZeroOffset(325.6 - 180.0);
+        m_absoluteEncoder.setZeroOffset(340.0 - 180.0);
         m_pid.setFeedbackDevice(m_absoluteEncoder);
         m_encoder.setPosition(degreesToRotations(m_absoluteEncoder.getPosition()));
         BurnManager.burnFlash(m_master);

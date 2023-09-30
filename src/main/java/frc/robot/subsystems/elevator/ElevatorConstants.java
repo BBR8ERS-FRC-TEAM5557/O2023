@@ -66,19 +66,6 @@ public class ElevatorConstants {
 
     }
 
-    public static final SparkMaxConfiguration kSlaveMotorConfiguration = new SparkMaxConfiguration();
-    static {
-        kSlaveMotorConfiguration.canID = new CANDeviceId(CANDeviceType.SPARK_MAX, 32);
-        kSlaveMotorConfiguration.label = "Elevator Slave";
-
-        kSlaveMotorConfiguration.kVoltageCompensation = 12.0;
-        kSlaveMotorConfiguration.kSmartCurrentLimit = 40.0;
-        kSlaveMotorConfiguration.kOpenLoopRampRate = 1.0;
-        kSlaveMotorConfiguration.kClosedLoopRampRate = 0.25;
-        kSlaveMotorConfiguration.kShouldInvert = true;
-        kSlaveMotorConfiguration.kIdleMode = IdleMode.kBrake;
-    }
-
     public static double rotationsToInches(double rotations) {
         return rotations / kRotationsPerInch;
     }

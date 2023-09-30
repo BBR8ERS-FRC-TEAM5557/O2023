@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.AutoRoutineManager;
 import frc.robot.auto.SystemsCheckManager;
@@ -63,44 +64,32 @@ public class RobotContainer {
 
     public RobotContainer() {
         if (kIsReal) {
-            /*
-             * m_swerve = new Swerve(new GyroIOPigeon2(),
-             * new ModuleIOSparkMax(0, kFLDriveMotor, kFLTurnMotor, kFLCancoder, kFLOffset),
-             * new ModuleIOSparkMax(1, kFRDriveMotor, kFRTurnMotor, kFRCancoder, kFROffset),
-             * new ModuleIOSparkMax(2, kBLDriveMotor, kBLTurnMotor, kBLCancoder, kBLOffset),
-             * new ModuleIOSparkMax(3, kBRDriveMotor, kBRTurnMotor, kBRCancoder,
-             * kBROffset));
-             */
-            //m_elevator = new Elevator(new ElevatorIOSparkMax());
+            m_swerve = new Swerve(new GyroIOPigeon2(),
+                    new ModuleIOSparkMax(0, kFLDriveMotor, kFLTurnMotor, kFLCancoder, kFLOffset),
+                    new ModuleIOSparkMax(1, kFRDriveMotor, kFRTurnMotor, kFRCancoder, kFROffset),
+                    new ModuleIOSparkMax(2, kBLDriveMotor, kBLTurnMotor, kBLCancoder, kBLOffset),
+                    new ModuleIOSparkMax(3, kBRDriveMotor, kBRTurnMotor, kBRCancoder, kBROffset));
+            m_elevator = new Elevator(new ElevatorIOSparkMax());
             m_wrist = new Wrist(new WristIOSparkMax());
-            // m_roller = new Roller(new RollerIOSparkMax());
+            m_roller = new Roller(new RollerIOSparkMax());
         } else {
-            m_swerve = new Swerve(new GyroIO() {
-            }, new ModuleIOSim(), new ModuleIOSim(),
+            m_swerve = new Swerve(new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(),
                     new ModuleIOSim(), new ModuleIOSim());
         }
 
         // Instantiate missing subsystems
         if (m_swerve == null) {
-            m_swerve = new Swerve(new GyroIO() {
-            }, new ModuleIO() {
-            }, new ModuleIO() {
-            },
-                    new ModuleIO() {
-                    }, new ModuleIO() {
-                    });
+            m_swerve = new Swerve(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {},
+                    new ModuleIO() {}, new ModuleIO() {});
         }
         if (m_elevator == null) {
-            m_elevator = new Elevator(new ElevatorIO() {
-            });
+            m_elevator = new Elevator(new ElevatorIO() {});
         }
         if (m_wrist == null) {
-            m_wrist = new Wrist(new WristIO() {
-            });
+            m_wrist = new Wrist(new WristIO() {});
         }
         if (m_roller == null) {
-            m_roller = new Roller(new RollerIO() {
-            });
+            m_roller = new Roller(new RollerIO() {});
         }
 
         m_autoManager = new AutoRoutineManager(m_swerve, m_elevator);
@@ -111,7 +100,8 @@ public class RobotContainer {
         configureBindings();
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Driver");
-        shuffleboardTab.addString("Node Type", () -> ObjectiveTracker.getNodeLevel().name() + " " + ObjectiveTracker.getGamePiece().name());
+        shuffleboardTab.addString("Node Type", () -> ObjectiveTracker.getNodeLevel().name() + " "
+                + ObjectiveTracker.getGamePiece().name());
         shuffleboardTab.addString("Super State", () -> Superstructure.getCurrentGoal().name());
     }
 
@@ -124,7 +114,8 @@ public class RobotContainer {
                 this::getRotationInput, m_driver::getRightBumper));
 
         // Reset swerve heading
-        new Trigger(m_driver::getStartButton).onTrue(new InstantCommand(() -> m_stateEstimator.setPose(new Pose2d())));
+        new Trigger(m_driver::getStartButton)
+                .onTrue(new InstantCommand(() -> m_stateEstimator.setPose(new Pose2d())));
 
         // Driver sets cone intake
         new Trigger(m_driver::getLeftBumper)
@@ -156,7 +147,9 @@ public class RobotContainer {
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
                 .onFalse(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kUncappedLimits)))
-                .whileTrue(Superstructure.setScoreTeleop())
+                .whileTrue(Commands.sequence(new WaitUntilCommand(
+                        () -> m_swerve.isUnderKinematicLimit(SwerveConstants.kScoringLimits)),
+                        Superstructure.setScoreTeleop()))
                 .onFalse(Superstructure.setStow());
 
         // Ejects gamepiece when operator presses A button
@@ -195,23 +188,23 @@ public class RobotContainer {
 
         new Trigger(() -> DriverStation.isTeleopEnabled() && DriverStation.getMatchTime() > 0.0
                 && DriverStation.getMatchTime() <= Math.round(15.0))
-                .onTrue(Commands.sequence(Commands.run(() -> {
-                    LEDs.getInstance().endgameAlert = true;
-                    m_driver.setRumble(RumbleType.kBothRumble, 1.0);
-                    m_operator.setRumble(RumbleType.kBothRumble, 1.0);
-                }).withTimeout(0.5), Commands.run(() -> {
-                    LEDs.getInstance().endgameAlert = false;
-                    m_driver.setRumble(RumbleType.kBothRumble, 0.0);
-                    m_operator.setRumble(RumbleType.kBothRumble, 0.0);
-                }).withTimeout(0.5), Commands.run(() -> {
-                    LEDs.getInstance().endgameAlert = true;
-                    m_driver.setRumble(RumbleType.kBothRumble, 1.0);
-                    m_operator.setRumble(RumbleType.kBothRumble, 1.0);
-                }).withTimeout(0.5), Commands.run(() -> {
-                    LEDs.getInstance().endgameAlert = false;
-                    m_driver.setRumble(RumbleType.kBothRumble, 0.0);
-                    m_operator.setRumble(RumbleType.kBothRumble, 0.0);
-                }).withTimeout(1.0)));
+                        .onTrue(Commands.sequence(Commands.run(() -> {
+                            LEDs.getInstance().endgameAlert = true;
+                            m_driver.setRumble(RumbleType.kBothRumble, 1.0);
+                            m_operator.setRumble(RumbleType.kBothRumble, 1.0);
+                        }).withTimeout(0.5), Commands.run(() -> {
+                            LEDs.getInstance().endgameAlert = false;
+                            m_driver.setRumble(RumbleType.kBothRumble, 0.0);
+                            m_operator.setRumble(RumbleType.kBothRumble, 0.0);
+                        }).withTimeout(0.5), Commands.run(() -> {
+                            LEDs.getInstance().endgameAlert = true;
+                            m_driver.setRumble(RumbleType.kBothRumble, 1.0);
+                            m_operator.setRumble(RumbleType.kBothRumble, 1.0);
+                        }).withTimeout(0.5), Commands.run(() -> {
+                            LEDs.getInstance().endgameAlert = false;
+                            m_driver.setRumble(RumbleType.kBothRumble, 0.0);
+                            m_operator.setRumble(RumbleType.kBothRumble, 0.0);
+                        }).withTimeout(1.0)));
 
     }
 

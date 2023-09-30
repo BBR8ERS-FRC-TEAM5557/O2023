@@ -76,6 +76,8 @@ public class Wrist extends SubsystemBase {
                 .withWidget(BuiltInWidgets.kGraph);
         shuffleboardTab.addNumber("Demand", () -> Util.truncate(m_demand, 2))
                 .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab.addNumber("Output", () -> Util.truncate(m_inputs.WristAppliedVolts, 2))
+                .withWidget(BuiltInWidgets.kGraph);
 
         shuffleboardTab.addString("Control Mode", () -> getControlMode().name());
         shuffleboardTab.addString("Command",
@@ -97,6 +99,8 @@ public class Wrist extends SubsystemBase {
         } else {
             m_setpoint = m_profile.calculate(Timer.getFPGATimestamp() - m_profileTimestamp);
             m_io.setAngleDegrees(m_setpoint.position, m_setpoint.velocity);
+
+            Logger.getInstance().recordOutput("Wrist/Setpoint", m_setpoint.position);
         }
 
         if (cruiseVelocity.hasChanged(cruiseVelocity.hashCode())
@@ -138,8 +142,8 @@ public class Wrist extends SubsystemBase {
     }
 
     public synchronized TrapezoidProfile.State getState() {
-        return new TrapezoidProfile.State(m_inputs.WristInternalPositionDeg,
-                m_inputs.WristInternalVelocityDegPerSec);
+        return new TrapezoidProfile.State(m_inputs.WristAbsolutePositionDeg,
+                m_inputs.WristAbsoluteVelocityDegPerSec);
     }
 
 
@@ -168,16 +172,16 @@ public class Wrist extends SubsystemBase {
     }
 
     // Wait decorator commands
-    public Command tuckWaitCommand(double length) {
-        return new WaitUntilCommand(() -> getState().position < length);
+    public Command tuckWaitCommand(double angle) {
+        return new WaitUntilCommand(() -> getState().position > angle);
     }
 
-    public Command extendWaitCommand(double length) {
-        return new WaitUntilCommand(() -> getState().position > length);
+    public Command extendWaitCommand(double angle) {
+        return new WaitUntilCommand(() -> getState().position < angle);
     }
 
-    public Command epsilonWaitCommand(double length) {
-        return new WaitUntilCommand(() -> Math.abs(getState().position - length) < kPadding);
+    public Command epsilonWaitCommand(double angle) {
+        return new WaitUntilCommand(() -> Math.abs(getState().position - angle) < kPadding);
     }
 
     public Command epsilonWaitCommand() {

@@ -33,7 +33,7 @@ public class Superstructure {
         return Commands.sequence(
             new InstantCommand(() -> setCurrentGoal(goal)),
             elevator.setElevatorHeightProfiled(goal.elevator),
-                // elevator.extendWaitCommand(goal.elevator - 7.0),
+                elevator.extendWaitCommand(goal.elevator - 15.0),
                 wrist.setWristAngleProfiled(goal.wrist));
     }
 
@@ -83,8 +83,8 @@ public class Superstructure {
                 .sequence(
                         Commands.deadline(roller.intakeConeCommand(),
                                 setSuperstructureGoal(SuperstructureGoal.GROUND_CONE_INTAKE)),
-                        new WaitCommand(0.5))
-                .finallyDo(interupted -> setSuperstructureGoal(SuperstructureGoal.STOW));
+                        new WaitCommand(0.0))
+                .finallyDo(interrupted -> setSuperstructureGoal(SuperstructureGoal.STOW).schedule());
     }
 
     public static Command intakeGroundCube() {
@@ -92,8 +92,8 @@ public class Superstructure {
                 .sequence(
                         Commands.deadline(roller.intakeCubeCommand(),
                                 setSuperstructureGoal(SuperstructureGoal.GROUND_CUBE_INTAKE)),
-                        new WaitCommand(0.5))
-                .finallyDo(interupted -> setSuperstructureGoal(SuperstructureGoal.STOW));
+                        new WaitCommand(0.0))
+                .finallyDo(interrupted -> setSuperstructureGoal(SuperstructureGoal.STOW).schedule());
     }
 
     public static Command intakeSubstation() {
@@ -102,14 +102,14 @@ public class Superstructure {
                         Commands.deadline(roller.intakeConeCommand(),
                                 setSuperstructureGoal(SuperstructureGoal.SHELF_CONE_INTAKE)),
                         new WaitCommand(0.5))
-                .finallyDo(interupted -> setSuperstructureGoal(SuperstructureGoal.STOW));
+                .finallyDo(interrupted -> setSuperstructureGoal(SuperstructureGoal.STOW).schedule());
     }
 
 
     public static enum SuperstructureGoal {
-        STOW(0.0, 270.0),
+        STOW(0.0, 260.0),
 
-        GROUND_CONE_INTAKE(5.0, 200.0), GROUND_CUBE_INTAKE(5.0, 200.0),
+        GROUND_CONE_INTAKE(0.0, 198.0), GROUND_CUBE_INTAKE(0.0, 176.5),
 
         SHELF_CONE_INTAKE(5.0, 200.0), SHELF_CUBE_INTAKE(5.0, 200.0),
 

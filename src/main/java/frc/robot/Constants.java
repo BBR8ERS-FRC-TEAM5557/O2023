@@ -27,11 +27,10 @@ public class Constants {
         public static final double kBROffset = -81.18;
         
         public static final int kElevatorMasterMotor = 31;
-        public static final int kElevatorSlaveMotor = 0;
-
-        public static final int kRollerMotor = 0;
-
         public static final int kWristMotor = 40;
+        public static final int kRollerMotor = 41;
+
+
 
 
         
