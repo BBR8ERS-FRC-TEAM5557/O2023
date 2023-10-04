@@ -149,8 +149,7 @@ public class RobotContainer {
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kUncappedLimits)))
                 .whileTrue(Commands.sequence(new WaitUntilCommand(
                         () -> m_swerve.isUnderKinematicLimit(SwerveConstants.kScoringLimits)),
-                        Superstructure.setScoreTeleop()))
-                .onFalse(Superstructure.setStow());
+                        Superstructure.setScoreTeleop()));
 
         // Ejects gamepiece when operator presses A button
         new Trigger(m_operator::getAButton).onTrue(new ConditionalCommand(m_roller.scoreCone(),

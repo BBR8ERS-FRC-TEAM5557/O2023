@@ -39,9 +39,9 @@ public class SystemsCheckManager {
         m_chooser.addDefaultOption("--No Check Selected--", null);
 
         m_chooser.addOption("Drivetrain Check",
-                Commands.sequence(runModuleCheckSequence(0), new WaitCommand(2.0),
-                        runModuleCheckSequence(1), new WaitCommand(2.0), runModuleCheckSequence(2),
-                        new WaitCommand(2.0), runModuleCheckSequence(3)));
+                Commands.sequence(runModuleCheckSequence(0), new WaitCommand(1.0),
+                        runModuleCheckSequence(1), new WaitCommand(1.0), runModuleCheckSequence(2),
+                        new WaitCommand(1.0), runModuleCheckSequence(3)));
 
         m_chooser.addOption("Superstructure Cone Check",
                 Commands.sequence(Superstructure.intakeGroundCone(), new WaitCommand(1.0),
