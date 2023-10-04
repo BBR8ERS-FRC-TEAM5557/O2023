@@ -142,11 +142,11 @@ public class Swerve extends SubsystemBase {
             var setpointTwist = new Pose2d().log(new Pose2d(
                     m_desChassisSpeeds.vxMetersPerSecond * Robot.defaultPeriodSecs,
                     m_desChassisSpeeds.vyMetersPerSecond * Robot.defaultPeriodSecs, new Rotation2d(
-                            m_desChassisSpeeds.omegaRadiansPerSecond * Robot.defaultPeriodSecs)));
+                            m_desChassisSpeeds.omegaRadiansPerSecond * Robot.defaultPeriodSecs * 4)));
 
             var adjustedSpeeds = new ChassisSpeeds(setpointTwist.dx / Robot.defaultPeriodSecs,
                     setpointTwist.dy / Robot.defaultPeriodSecs,
-                    setpointTwist.dtheta / Robot.defaultPeriodSecs);
+                    m_desChassisSpeeds.omegaRadiansPerSecond);
 
             m_swerveSetpoint = m_setpointGenerator.generateSetpoint(m_kinematicLimits,
                     m_swerveSetpoint, adjustedSpeeds, Robot.defaultPeriodSecs);

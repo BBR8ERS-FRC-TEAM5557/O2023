@@ -38,7 +38,7 @@ public class WristIOSparkMax implements WristIO {
         m_absoluteEncoder.setPositionConversionFactor(360.0);
         m_absoluteEncoder.setVelocityConversionFactor(360.0);
         m_absoluteEncoder.setInverted(true);
-        m_absoluteEncoder.setZeroOffset(340.0 - 180.0);
+        m_absoluteEncoder.setZeroOffset(339.75 - 180.0); //subtract for more down
         m_pid.setFeedbackDevice(m_absoluteEncoder);
         m_encoder.setPosition(degreesToRotations(m_absoluteEncoder.getPosition()));
         BurnManager.burnFlash(m_master);
