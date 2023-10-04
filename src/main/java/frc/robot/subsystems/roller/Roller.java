@@ -76,7 +76,7 @@ public class Roller extends SubsystemBase {
     }
 
     public enum State {
-        INTAKING_CUBE(10.0), EJECT_CUBE(5.0), HOLD_CUBE(1.0),
+        INTAKING_CUBE(-10.0), EJECT_CUBE(5.0), HOLD_CUBE(-1.0),
 
         INTAKING_CONE(10.0), EJECT_CONE(-5.0), HOLD_CONE(1.0),
 
