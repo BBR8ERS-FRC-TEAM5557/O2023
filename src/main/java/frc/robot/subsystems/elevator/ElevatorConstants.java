@@ -23,7 +23,7 @@ public class ElevatorConstants {
     public static final double kMaxHeight = 30.0; //inches
 
     public static final double kHomeVoltage = 4.0;
-    public static final double kHomeAmpsThreshold = 30.0;
+    public static final double kHomeAmpsThreshold = 20.0;
 
     public static final double kElevatorkP = 0.05;
     public static final double kElevatorkI = 0.0;

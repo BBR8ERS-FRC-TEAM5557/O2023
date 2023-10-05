@@ -118,7 +118,7 @@ public class Superstructure {
         public static enum SuperstructureGoal {
                 STOW(0.0, 260.0),
 
-                GROUND_CONE_INTAKE(0.0, 190.0), GROUND_CUBE_INTAKE(0.0, 181.0),
+                GROUND_CONE_INTAKE(0.0, 190.0), GROUND_CUBE_INTAKE(0.0, 180.0),
 
                 SHELF_CONE_INTAKE(5.0, 200.0), SHELF_CUBE_INTAKE(5.0, 200.0),
 

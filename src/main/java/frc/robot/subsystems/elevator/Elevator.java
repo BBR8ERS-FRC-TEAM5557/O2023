@@ -45,10 +45,10 @@ public class Elevator extends SubsystemBase {
         this.m_io = io;
 
         // Automatic Home Trigger
-        /*new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode == ControlMode.MOTION_PROFILE)
+        new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode == ControlMode.MOTION_PROFILE)
                 && (Util.epsilonEquals(m_demand, kEncoderHomePosition, 1.0))
                 && (Util.epsilonEquals(m_inputs.ElevatorHeightInches, kEncoderHomePosition, 1.0)))
-                .onTrue(homeElevator());*/
+                .onTrue(homeElevator());
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Elevator");
         shuffleboardTab.addNumber("Position", () -> Util.truncate(getState().position, 2))
@@ -140,8 +140,7 @@ public class Elevator extends SubsystemBase {
                 .sequence(new InstantCommand(() -> m_io.shouldEnableLowerLimit(false)),
                         new RunCommand(() -> runVoltage(-kHomeVoltage), this)
                                 .until(() -> m_inputs.ElevatorCurrentAmps[0] > kHomeAmpsThreshold),
-                        new InstantCommand(() -> m_io.resetSensorPosition(kEncoderHomePosition)),
-                        setElevatorHeightProfiled(kEncoderHomePosition))
+                        new InstantCommand(() -> m_io.resetSensorPosition(kEncoderHomePosition)))
                 .finallyDo(
                         interupted -> new InstantCommand(() -> m_io.shouldEnableLowerLimit(true)));
     }
