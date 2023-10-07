@@ -44,12 +44,6 @@ public class Elevator extends SubsystemBase {
         System.out.println("[Init] Creating Elevator");
         this.m_io = io;
 
-        // Automatic Home Trigger
-        new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode == ControlMode.MOTION_PROFILE)
-                && (Util.epsilonEquals(m_demand, kEncoderHomePosition, 1.0))
-                && (Util.epsilonEquals(m_inputs.ElevatorHeightInches, kEncoderHomePosition, 1.0)))
-                .onTrue(homeElevator());
-
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Elevator");
         shuffleboardTab.addNumber("Position", () -> Util.truncate(getState().position, 2))
                 .withWidget(BuiltInWidgets.kGraph);
@@ -61,6 +55,9 @@ public class Elevator extends SubsystemBase {
                 .withWidget(BuiltInWidgets.kGraph);
         shuffleboardTab
                 .addNumber("Output", () -> Util.truncate(m_inputs.ElevatorAppliedVolts, 2))
+                .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab
+                .addNumber("Current", () -> Util.truncate(m_inputs.ElevatorCurrentAmps[0], 2))
                 .withWidget(BuiltInWidgets.kGraph);
 
 
@@ -140,7 +137,9 @@ public class Elevator extends SubsystemBase {
                 .sequence(new InstantCommand(() -> m_io.shouldEnableLowerLimit(false)),
                         new RunCommand(() -> runVoltage(-kHomeVoltage), this)
                                 .until(() -> m_inputs.ElevatorCurrentAmps[0] > kHomeAmpsThreshold),
-                        new InstantCommand(() -> m_io.resetSensorPosition(kEncoderHomePosition)))
+                        new InstantCommand(() -> m_io.resetSensorPosition(kEncoderHomePosition)),
+                        new InstantCommand(() -> runVoltage(0.0), this)
+                        )
                 .finallyDo(
                         interupted -> new InstantCommand(() -> m_io.shouldEnableLowerLimit(true)));
     }

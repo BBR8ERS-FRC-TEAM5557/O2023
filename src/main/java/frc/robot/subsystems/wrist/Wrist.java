@@ -54,17 +54,6 @@ public class Wrist extends SubsystemBase {
         System.out.println("[Init] Creating Wrist");
         this.m_io = io;
 
-        // Automatic Home Trigger
-        /*
-         * new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode ==
-         * ControlMode.MOTION_PROFILE) && (Util.epsilonEquals(m_demand, kEncoderHomePosition, 3.0))
-         * && (Util.epsilonEquals(m_inputs.WristInternalPositionDeg, kEncoderHomePosition,
-         * 3.0))).onTrue(homeWrist());
-         */
-
-        // Manual Home Trigger
-        // new Trigger(() -> RobotContainer.m_operator.getBButton()).whileTrue(homeWrist());
-
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Wrist");
         shuffleboardTab.addNumber("Position Internal", () -> Util.truncate(getState().position, 2))
                 .withWidget(BuiltInWidgets.kGraph);

@@ -20,7 +20,7 @@ public class ElevatorConstants {
 
     public static final double kEncoderHomePosition = 0.0; //inches
     public static final double kMinHeight = 0.0; //inches
-    public static final double kMaxHeight = 30.0; //inches
+    public static final double kMaxHeight = 24.0; //inches
 
     public static final double kHomeVoltage = 4.0;
     public static final double kHomeAmpsThreshold = 20.0;

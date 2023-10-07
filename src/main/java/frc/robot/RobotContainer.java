@@ -118,23 +118,23 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(() -> m_stateEstimator.setPose(new Pose2d())));
 
         // Driver sets cone intake
-        new Trigger(m_driver::getLeftBumper)
+        new Trigger(m_operator::getLeftBumper)
                 .onTrue(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
                 .onFalse(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kUncappedLimits)))
                 .whileTrue(Superstructure.intakeGroundCone());
 
-        // Driver sets cube intake
-        new Trigger(() -> m_driver.getLeftTriggerAxis() > 0.5)
+        // Operator sets cube intake
+        new Trigger(() -> m_operator.getLeftTriggerAxis() > 0.5)
                 .onTrue(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
                 .onFalse(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kUncappedLimits)))
                 .whileTrue(Superstructure.intakeGroundCube());
 
-        // Driver sets Substation intake
-        new Trigger(() -> m_driver.getRightTriggerAxis() > 0.5)
+        // Operator sets Substation intake
+        new Trigger(m_operator::getRightBumper)
                 .onTrue(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
                 .onFalse(new InstantCommand(
@@ -164,14 +164,12 @@ public class RobotContainer {
         // Manual Elevator
         new Trigger(m_operator::getLeftStickButton).whileTrue(m_elevator.homeElevator());
 
-        new Trigger(() -> m_operator.getRightBumper() && m_operator.getLeftBumper())
+        new Trigger(m_operator::getStartButton)
                 .whileTrue(m_elevator.runElevatorOpenLoop(() -> getElevatorJogger()))
                 .whileTrue(m_wrist.runWristOpenLoop(() -> getWristJogger()))
                 .onFalse(m_elevator.runElevatorOpenLoop(() -> 0.0))
                 .onFalse(m_wrist.runWristOpenLoop(() -> 0.0));
 
-        // Manual Wrist
-        new Trigger(m_operator::getRightStickButton).whileTrue(m_wrist.homeWrist());
 
         // Endgame alerts
         new Trigger(() -> DriverStation.isTeleopEnabled() && DriverStation.getMatchTime() > 0.0

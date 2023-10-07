@@ -12,6 +12,10 @@ public class ObjectiveTracker {
         return gamePiece;
     }
 
+    public static void setGamePiece(GamePiece piece) {
+        gamePiece = piece;
+    }
+
     public static NodeLevel getNodeLevel() {
         return nodeLevel;
     }

@@ -23,7 +23,7 @@ public class Roller extends SubsystemBase {
     private State currentState = State.DO_NOTHING;
 
     private TunableNumber velocityThreshold = new TunableNumber("Roller/VelocityThreshold", 200.0);
-    private TunableNumber currentThreshold = new TunableNumber("Roller/CurrentThreshold", 15.0);
+    private TunableNumber currentThreshold = new TunableNumber("Roller/CurrentThreshold", 25.0);
 
     public Roller(RollerIO io) {
         System.out.println("[Init] Creating Roller");
@@ -38,6 +38,7 @@ public class Roller extends SubsystemBase {
                 .withWidget(BuiltInWidgets.kGraph);
         shuffleboardTab.addNumber("Output", () -> Util.truncate(getMotorOutput(), 2))
                 .withWidget(BuiltInWidgets.kGraph);
+        shuffleboardTab.addBoolean("Is Stalled?", this::isStalled);
 
         shuffleboardTab.addString("Control State", () -> currentState.name());
         shuffleboardTab.addString("Command",
@@ -76,9 +77,9 @@ public class Roller extends SubsystemBase {
     }
 
     public enum State {
-        INTAKING_CUBE(-10.0), EJECT_CUBE(5.0), HOLD_CUBE(-1.0),
+        INTAKING_CUBE(-10.0), EJECT_CUBE(7.0), HOLD_CUBE(-1.0),
 
-        INTAKING_CONE(10.0), EJECT_CONE(-5.0), HOLD_CONE(1.0),
+        INTAKING_CONE(10.0), EJECT_CONE(-3.0), HOLD_CONE(1.0),
 
         DO_NOTHING(0.0), IDLE(1.0);
 
