@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.roller.Roller;
@@ -38,7 +39,7 @@ public class Superstructure {
         }
 
         public static Command epsilonWaitCommand() {
-                return Commands.sequence(elevator.epsilonWaitCommand());
+                return Commands.sequence(elevator.epsilonWaitCommand(), wrist.epsilonWaitCommand());
         }
 
         public static Command setSuperstructureScore(Supplier<NodeLevel> level,
@@ -64,8 +65,8 @@ public class Superstructure {
         }
 
         public static Command setScoreTeleop() {
-                return setSuperstructureScore(ObjectiveTracker::getNodeLevel,
-                                ObjectiveTracker::getGamePiece)
+                return Commands.sequence(setSuperstructureScore(ObjectiveTracker::getNodeLevel,
+                                ObjectiveTracker::getGamePiece), new WaitUntilCommand(() -> false))
                                 .finallyDo(interrupted -> setSuperstructureGoal(SuperstructureGoal.STOW).schedule());
         }
 
@@ -88,6 +89,7 @@ public class Superstructure {
         public static Command intakeGroundCone() {
                 return Commands
                                 .sequence(
+                                        new InstantCommand(() -> ObjectiveTracker.setGamePiece(GamePiece.CONE)),
                                                 Commands.deadline(roller.intakeConeCommand(),
                                                                 setSuperstructureGoal(
                                                                                 SuperstructureGoal.GROUND_CONE_INTAKE)),
@@ -98,6 +100,7 @@ public class Superstructure {
         public static Command intakeGroundCube() {
                 return Commands
                                 .sequence(
+                                        new InstantCommand(() -> ObjectiveTracker.setGamePiece(GamePiece.CUBE)),
                                                 Commands.deadline(roller.intakeCubeCommand(),
                                                                 setSuperstructureGoal(
                                                                                 SuperstructureGoal.GROUND_CUBE_INTAKE)),
@@ -108,10 +111,11 @@ public class Superstructure {
         public static Command intakeSubstation() {
                 return Commands
                                 .sequence(
+                                        new InstantCommand(() -> ObjectiveTracker.setGamePiece(GamePiece.CONE)),
                                                 Commands.deadline(roller.intakeConeCommand(),
                                                                 setSuperstructureGoal(
                                                                                 SuperstructureGoal.SHELF_CONE_INTAKE)),
-                                                new WaitCommand(0.5))
+                                                new WaitCommand(0.0))
                                 .finallyDo(interrupted -> setSuperstructureGoal(SuperstructureGoal.STOW).schedule());
         }
 
@@ -126,11 +130,11 @@ public class Superstructure {
 
                 SCORE_STANDBY(5.0, 200.0),
 
-                L1_SCORE(10.0, 200.0),
+                L1_SCORE(0.0, 235.0),
 
-                L2_CONE(12.0, 200.0), L2_CUBE(12.0, 200.0),
+                L2_CONE(15.0, 225.0), L2_CUBE(12.0, 200.0),
 
-                L3_CONE(20.0, 200.0), L3_CUBE(20.0, 200.0);
+                L3_CONE(23.0, 225.0), L3_CUBE(20.0, 200.0);
 
                 public double elevator; // inches
                 public double wrist; // degrees
