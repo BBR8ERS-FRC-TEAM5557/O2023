@@ -44,9 +44,12 @@ public class SystemsCheckManager {
                         new WaitCommand(1.0), runModuleCheckSequence(3)));
 
         m_chooser.addOption("Superstructure Cone Check",
-                Commands.sequence(Superstructure.intakeGroundCone(), new WaitCommand(1.0),
-                        Superstructure.scoreConeLevel(NodeLevel.HYBRID),
-                        Superstructure.epsilonWaitCommand(), new WaitCommand(1.0),
+                Commands.sequence(
+                        Superstructure.intakeGroundCone(), 
+                        new WaitCommand(1.0),
+                        Superstructure.scoreConeLevel(NodeLevel.HIGH),
+                        Superstructure.epsilonWaitCommand(),
+                        new WaitCommand(1.0),
 
                         Superstructure.intakeGroundCone(), new WaitCommand(1.0),
                         Superstructure.scoreConeLevel(NodeLevel.MID),

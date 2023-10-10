@@ -120,7 +120,7 @@ public class Superstructure {
         }
 
         public static enum SuperstructureGoal {
-                STOW(0.0, 260.0),
+                STOW(1.5, 260.0),
 
                 GROUND_CONE_INTAKE(0.0, 190.0), GROUND_CUBE_INTAKE(0.0, 180.0),
 
@@ -132,9 +132,9 @@ public class Superstructure {
 
                 L1_SCORE(0.0, 235.0),
 
-                L2_CONE(15.0, 225.0), L2_CUBE(12.0, 200.0),
+                L2_CONE(15.8, 210.0), L2_CUBE(12.0, 200.0),
 
-                L3_CONE(23.0, 225.0), L3_CUBE(20.0, 200.0);
+                L3_CONE(23.0, 210.0), L3_CUBE(20.0, 200.0);
 
                 public double elevator; // inches
                 public double wrist; // degrees
