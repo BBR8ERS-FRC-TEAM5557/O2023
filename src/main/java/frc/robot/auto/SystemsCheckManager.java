@@ -47,7 +47,7 @@ public class SystemsCheckManager {
                 Commands.sequence(
                         Superstructure.intakeGroundCone(), 
                         new WaitCommand(1.0),
-                        Superstructure.scoreConeLevel(NodeLevel.HIGH),
+                        Superstructure.scoreConeLevel(NodeLevel.HYBRID),
                         Superstructure.epsilonWaitCommand(),
                         new WaitCommand(1.0),
 

@@ -20,7 +20,7 @@ public class SwerveConstants {
     public static final double kMaxOmega = 11.5; //radians per second
     public static final double kMaxAttainableSpeed = kMaxSpeed * 0.85; // Max out at 85% to make sure speeds are attainable (4.6 mps)
     public static final double kMaxAcceleration = 3.0; // m/s^2
-    public static final double kMaxAttainableAcceleration = kMaxAcceleration * 0.85;
+    public static final double kMaxAttainableAcceleration = kMaxAcceleration * 0.8;
 
 
     public static final boolean kCanCoderInverted = false;
@@ -51,7 +51,7 @@ public class SwerveConstants {
     public static final double kRotationkI = 0.0;
     public static final double kRotationkD = 0.0;
 
-    public static final double kSnapMaxOmega = kMaxOmega * 0.85;
+    public static final double kSnapMaxOmega = kMaxOmega * 0.35;
     public static final double kSnapMaxAlpha = kSnapMaxOmega / 0.75;
 
 

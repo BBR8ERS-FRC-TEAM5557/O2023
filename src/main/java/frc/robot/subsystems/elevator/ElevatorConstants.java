@@ -14,7 +14,7 @@ public class ElevatorConstants {
     public static final double kSprocketPitchDiameter = 1.75; //inches
     public static final double kRotationsPerInch = kGearReduction / (kSprocketPitchDiameter * Math.PI);
 
-    public static final double kPadding = 0.5; // inches
+    public static final double kPadding = 1.0; // inches
     public static final double kCruiseVelocity = 50.0; // inches/sec
     public static final double kTimeToCruise = 0.25; // sec
 

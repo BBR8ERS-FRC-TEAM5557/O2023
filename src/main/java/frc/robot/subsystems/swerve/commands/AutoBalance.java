@@ -13,25 +13,25 @@ import frc.robot.util.Util;
 
 public class AutoBalance {
         // Auto engage controls
-        private final Swerve swerve = RobotContainer.m_swerve;
-        double flap_trigger_angle = -5.0; // Less than
-        double platform_trigger_angle = -12.0; // Equal to
-        double balance_trigger_velocity = 8.0; // Greater than
+        private static final Swerve swerve = RobotContainer.m_swerve;
+        static double flap_trigger_angle = -5.0; // Less than
+        static double platform_trigger_angle = -12.0; // Equal to
+        static double balance_trigger_velocity = 8.0; // Greater than
     
 
     
-        public CommandBase autoBalanceCommand() {
+        public static CommandBase autoBalanceCommand() {
             return Commands.sequence(
-                Commands.deadline(new WaitCommand(1.0), driveOntoFlapCommand()),
-                Commands.deadline(new WaitCommand(1.0), driveOntoPlatformCommand()),
-                Commands.deadline(new WaitCommand(1.0), balanceOnPlatformCommand()),
+                driveOntoFlapCommand().withTimeout(1.0),
+                driveOntoPlatformCommand().withTimeout(1.0),
+                balanceOnPlatformCommand().withTimeout(1.0),
                 maintainBalanceCommand()
             ).withName("Auto Balance Command");
         }
     
         /* Applies to when the robot first drives up the ramp flaps to the balance, 
          and the platform doesn't tilt due to static resistance in the hinges */
-        private CommandBase driveOntoFlapCommand() {
+        private static CommandBase driveOntoFlapCommand() {
             return new CommandBase() {
                 ChassisSpeeds speed = new ChassisSpeeds(-2.1, 0.0, 0.0);
                 
@@ -54,7 +54,7 @@ public class AutoBalance {
         }
     
         /* The robot drives onto the Charging Station (Ramp is pushed into tilted state) */
-        private CommandBase driveOntoPlatformCommand() {
+        private static CommandBase driveOntoPlatformCommand() {
             return new CommandBase() {
                 private Timer timer = new Timer();
                 ChassisSpeeds speed = new ChassisSpeeds(-1.15, 0.0, 0.0);
@@ -84,7 +84,7 @@ public class AutoBalance {
         }
     
         /* Wait for gyro rate of change to detect when we start pitching forwards */
-        private CommandBase balanceOnPlatformCommand() {
+        private static CommandBase balanceOnPlatformCommand() {
             return new CommandBase() {
                 ChassisSpeeds speed = new ChassisSpeeds(-0.85, 0.0, 0.0);
 
@@ -113,7 +113,7 @@ public class AutoBalance {
     
         /* Once the robot hits the engage position for the first time, 
         use PID to maintain pitch within the allowed tolerance */
-        private CommandBase maintainBalanceCommand() {
+        private static CommandBase maintainBalanceCommand() {
             return new CommandBase() {
     
                 Timer timer = new Timer();

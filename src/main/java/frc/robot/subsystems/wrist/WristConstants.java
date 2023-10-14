@@ -16,7 +16,7 @@ public class WristConstants {
     public static final double kRotationsPerDegree = kGearReduction * (kSecondSprocketTeethCount / kFirstSprocketTeethCount) / 360.0;
 
     public static final double kEncoderHomePosition = 0.0; //degrees
-    public static final double kPadding = 0.5; // degrees
+    public static final double kPadding = 1.0; // degrees
     public static final double kCruiseVelocity = 150.0; // degrees/sec
     public static final double kTimeToCruise = 0.1; // sec
 

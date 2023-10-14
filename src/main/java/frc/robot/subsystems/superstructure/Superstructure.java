@@ -39,7 +39,7 @@ public class Superstructure {
         }
 
         public static Command epsilonWaitCommand() {
-                return Commands.sequence(elevator.epsilonWaitCommand(), wrist.epsilonWaitCommand());
+                return Commands.sequence(elevator.epsilonWaitCommand(), wrist.epsilonWaitCommand(), new WaitCommand(0.25));
         }
 
         public static Command setSuperstructureScore(Supplier<NodeLevel> level,
@@ -76,14 +76,14 @@ public class Superstructure {
 
         public static Command scoreCubeLevel(NodeLevel level) {
                 return Commands.sequence(setSuperstructureScore(() -> level, () -> GamePiece.CUBE),
-                                epsilonWaitCommand().withTimeout(3.0), roller.scoreCube(),
-                                setSuperstructureGoal(SuperstructureGoal.STOW));
+                                epsilonWaitCommand().withTimeout(2.0), roller.scoreCube(),
+                                setStow());
         }
 
         public static Command scoreConeLevel(NodeLevel level) {
                 return Commands.sequence(setSuperstructureScore(() -> level, () -> GamePiece.CONE),
-                                epsilonWaitCommand().withTimeout(3.0), roller.scoreCone(),
-                                setSuperstructureGoal(SuperstructureGoal.STOW));
+                                epsilonWaitCommand().withTimeout(2.0), roller.scoreCone(),
+                                setStow());
         }
 
         public static Command intakeGroundCone() {

@@ -27,6 +27,7 @@ import frc.robot.subsystems.superstructure.ObjectiveTracker.GamePiece;
 import frc.robot.subsystems.superstructure.ObjectiveTracker.NodeLevel;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveConstants;
+import frc.robot.subsystems.swerve.commands.AutoBalance;
 import frc.robot.util.DriveMotionPlanner;
 import frc.robot.util.RobotStateEstimator;
 
@@ -60,25 +61,57 @@ public class AutoRoutineManager {
     private void generateAutoChoices() {
         m_chooser.addDefaultOption("Do Nothing", null);
 
-        m_chooser.addOption("3 Piece", Commands.sequence(
-                new PrintCommand("Starting 3 piece"),
+        m_chooser.addOption("3 Piece (F)", Commands.sequence(new PrintCommand("Starting 3 piece"),
                 getPoseResetCommand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
-                //Superstructure.scoreConeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
+                Superstructure.scoreConeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
                 getFollowComand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
-                //Superstructure.scoreCubeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
+                Superstructure.scoreCubeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
                 getFollowComand(m_trajectoryMap.get("LeftCubeScoreToLeftMidIntake")),
                 getFollowComand(m_trajectoryMap.get("LeftMidIntakeToConeScore")),
-                getFollowComand(m_trajectoryMap.get("ConeScoreToEvacLeft"))
-        ));
+                getFollowComand(m_trajectoryMap.get("ConeScoreToEvacLeft"))));
 
-        m_chooser.addOption("2 Piece + Balance", Commands.sequence(
+        m_chooser.addOption("2 Piece + 1 + Balance (F)", Commands.sequence(
                 new PrintCommand("Starting 2 piece w/ balance"),
                 getPoseResetCommand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
                 Superstructure.scoreConeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
                 getFollowComand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
                 Superstructure.scoreCubeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(10.0),
                 getFollowComand(m_trajectoryMap.get("LeftCubeScoreToLeftMidIntake")),
-                getFollowComand(m_trajectoryMap.get("LeftMidIntakeToBalance"))));
+                getFollowComand(m_trajectoryMap.get("LeftMidIntakeToBalance")),
+                AutoBalance.autoBalanceCommand()));
+
+        m_chooser.addOption("2 Piece (F)",
+                Commands.sequence(new PrintCommand("2 Piece (F)"),
+                        getPoseResetCommand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
+                        Superstructure.scoreConeLevel(NodeLevel.HIGH),
+                        elevator.tuckWaitCommand(10.0),
+                        getFollowComand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
+                        Superstructure.scoreCubeLevel(NodeLevel.HIGH)));
+
+        m_chooser.addOption("1 Piece + Evac/Intake (F)",
+                Commands.sequence(new PrintCommand("Starting 1 Piece + 1 Pause (F)"),
+                        getPoseResetCommand(m_trajectoryMap.get("LeftToSweepPause")),
+                        Superstructure.scoreConeLevel(NodeLevel.HIGH),
+                        elevator.tuckWaitCommand(10.0),
+                        getFollowComand(m_trajectoryMap.get("LeftToSweepPause"))));
+
+        m_chooser.addOption("Score Cone + Balance (M)", Commands.sequence(
+                new PrintCommand("Starting Score Cone + Balance"),
+                getPoseResetCommand(m_trajectoryMap.get("MiddleToBalance")),
+                Superstructure.scoreConeLevel(NodeLevel.HIGH), elevator.tuckWaitCommand(5.0),
+                getFollowComand(m_trajectoryMap.get("MiddleToBalance")),
+                AutoBalance.autoBalanceCommand()));
+
+        m_chooser.addOption("1 Piece + Evac/Intake (B)",
+                Commands.sequence(new PrintCommand("Starting 1 Piece + 1 Pause (B)"),
+                        getPoseResetCommand(m_trajectoryMap.get("RightToIntake")),
+                        Superstructure.scoreConeLevel(NodeLevel.HIGH),
+                        elevator.tuckWaitCommand(10.0),
+                        getFollowComand(m_trajectoryMap.get("RightToIntake"))));
+
+        m_chooser.addOption("Score Cone (A)",
+                Commands.sequence(new PrintCommand("Starting Score Cone"),
+                        Superstructure.scoreConeLevel(NodeLevel.HIGH)));
 
     }
 
@@ -95,8 +128,9 @@ public class AutoRoutineManager {
         for (File file : files) {
             int index = file.getName().lastIndexOf('.');
             String prefix = file.getName().substring(0, index);
-            m_trajectoryMap.put(prefix, PathPlanner.loadPath(prefix,
-                    SwerveConstants.kMaxAttainableSpeed, SwerveConstants.kMaxAcceleration));
+            m_trajectoryMap.put(prefix,
+                    PathPlanner.loadPath(prefix, SwerveConstants.kMaxAttainableSpeed,
+                            SwerveConstants.kMaxAttainableAcceleration));
             System.out.println("Generated trajectory: " + prefix);
         }
     }
@@ -104,36 +138,41 @@ public class AutoRoutineManager {
     private void generateEventMap() {
         m_eventMap.put("intakeCube", new PrintCommand("[Intaking Cube!!!]")
                 .andThen(Superstructure.intakeGroundCube().withTimeout(3.0)));
-        m_eventMap.put("intakeDown", new PrintCommand("[Intaking Cone!!!]")
+        m_eventMap.put("intakeCone", new PrintCommand("[Intaking Cone!!!]")
                 .andThen(Superstructure.intakeGroundCone().withTimeout(3.0)));
 
-        m_eventMap.put("prepScoreHighCone", new PrintCommand("[Scoring High Cone!!!]")
-                .andThen(Superstructure.setSuperstructureScore(() -> NodeLevel.HIGH, () -> GamePiece.CONE)));
-        m_eventMap.put("prepScoreHighCube", new PrintCommand("[Scoring High Cube!!!]")
-                .andThen(Superstructure.setSuperstructureScore(() -> NodeLevel.HIGH, () -> GamePiece.CUBE)));
+        m_eventMap.put("prepScoreHighCone", new PrintCommand("[Scoring High Cone!!!]").andThen(
+                Superstructure.setSuperstructureScore(() -> NodeLevel.HIGH, () -> GamePiece.CONE)));
+        m_eventMap.put("prepScoreHighCube", new PrintCommand("[Scoring High Cube!!!]").andThen(
+                Superstructure.setSuperstructureScore(() -> NodeLevel.HIGH, () -> GamePiece.CUBE)));
     }
 
     private Command getFollowComand(PathPlannerTrajectory path) {
-        PathPlannerTrajectory transformedPath = PathPlannerTrajectory.transformTrajectoryForAlliance(path, DriverStation.getAlliance());
+        PathPlannerTrajectory transformedPath = PathPlannerTrajectory
+                .transformTrajectoryForAlliance(path, DriverStation.getAlliance());
 
-        PPSwerveControllerCommand followCommand =
-                new PPSwerveControllerCommand(transformedPath, RobotStateEstimator.getInstance()::getPose,
-                        DriveMotionPlanner.getForwardController(), // X controller
-                        DriveMotionPlanner.getStrafeController(), // Y controller
-                        DriveMotionPlanner.getRotationController(), // Rotation controller
-                        swerve::driveOpenLoop, // Module states consumer
-                        false, // Should the path be mirrored depending on alliance color.
-                        swerve // Requires swerve subsystem
-                );
-        
+        PPSwerveControllerCommand followCommand = new PPSwerveControllerCommand(transformedPath,
+                RobotStateEstimator.getInstance()::getPose,
+                DriveMotionPlanner.getForwardController(), // X controller
+                DriveMotionPlanner.getStrafeController(), // Y controller
+                DriveMotionPlanner.getRotationController(), // Rotation controller
+                swerve::driveOpenLoop, // Module states consumer
+                false, // Should the path be mirrored depending on alliance color.
+                swerve // Requires swerve subsystem
+        );
+
         return new FollowPathWithEvents(followCommand, path.getMarkers(), m_eventMap).alongWith(
-                new InstantCommand(() -> Logger.getInstance().recordOutput("PathFollowing", transformedPath)),
-                new InstantCommand(() -> RobotStateEstimator.getInstance().addFieldTrajectory("AutoTrajectory", transformedPath)));
+                new InstantCommand(
+                        () -> Logger.getInstance().recordOutput("PathFollowing", transformedPath)),
+                new InstantCommand(() -> RobotStateEstimator.getInstance()
+                        .addFieldTrajectory("AutoTrajectory", transformedPath)));
     }
 
     private Command getPoseResetCommand(PathPlannerTrajectory path) {
-        PathPlannerState transformedState = PathPlannerTrajectory.transformStateForAlliance(path.getInitialState(), DriverStation.getAlliance());
-        Pose2d transformedPose = new Pose2d(transformedState.poseMeters.getTranslation(), transformedState.holonomicRotation);
+        PathPlannerState transformedState = PathPlannerTrajectory
+                .transformStateForAlliance(path.getInitialState(), DriverStation.getAlliance());
+        Pose2d transformedPose = new Pose2d(transformedState.poseMeters.getTranslation(),
+                transformedState.holonomicRotation);
 
         return new InstantCommand(() -> setPose(transformedPose));
     }
