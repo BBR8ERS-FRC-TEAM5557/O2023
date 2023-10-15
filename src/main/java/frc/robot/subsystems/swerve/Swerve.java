@@ -102,9 +102,7 @@ public class Swerve extends SubsystemBase {
                     new double[] {});
 
         } else if (m_mode == ControlMode.X_OUT) {
-            for (var module : m_modules) {
-                module.runSetpoint(null, true, true);
-            }
+
         } else if (m_mode == ControlMode.CHARACTERIZATION) {
             // Run in characterization mode
             for (var module : m_modules) {

@@ -48,8 +48,8 @@ public class AutoRoutineManager {
         this.swerve = swerve;
         this.elevator = elevator;
 
-        generateTrajectories();
         generateEventMap();
+        generateTrajectories();
         generateAutoChoices();
         Logger.getInstance().recordOutput("AutoTraj", new Trajectory());
 
@@ -83,7 +83,7 @@ public class AutoRoutineManager {
         m_chooser.addOption("2 Piece (F)",
                 Commands.sequence(new PrintCommand("2 Piece (F)"),
                         getPoseResetCommand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
-                        Superstructure.scoreConeLevel(NodeLevel.HIGH),
+                        Superstructure.scoreCubeLevel(NodeLevel.HYBRID),
                         elevator.tuckWaitCommand(10.0),
                         getFollowComand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
                         Superstructure.scoreCubeLevel(NodeLevel.HIGH)));
@@ -105,7 +105,7 @@ public class AutoRoutineManager {
         m_chooser.addOption("1 Piece + Evac/Intake (B)",
                 Commands.sequence(new PrintCommand("Starting 1 Piece + 1 Pause (B)"),
                         getPoseResetCommand(m_trajectoryMap.get("RightToIntake")),
-                        Superstructure.scoreConeLevel(NodeLevel.HIGH),
+                        Superstructure.scoreCubeLevel(NodeLevel.HYBRID),
                         elevator.tuckWaitCommand(10.0),
                         getFollowComand(m_trajectoryMap.get("RightToIntake"))));
 
@@ -136,8 +136,7 @@ public class AutoRoutineManager {
     }
 
     private void generateEventMap() {
-        m_eventMap.put("intakeCube", new PrintCommand("[Intaking Cube!!!]")
-                .andThen(Superstructure.intakeGroundCube().withTimeout(3.0)));
+        m_eventMap.put("intakeCube", Superstructure.intakeGroundCube().withTimeout(3.0));
         m_eventMap.put("intakeCone", new PrintCommand("[Intaking Cone!!!]")
                 .andThen(Superstructure.intakeGroundCone().withTimeout(3.0)));
 
