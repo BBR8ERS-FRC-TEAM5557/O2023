@@ -29,7 +29,7 @@ public class ElevatorConstants {
     public static final double kElevatorkI = 0.0;
     public static final double kElevatorkD = 0.0;
 
-    public static final double kElevatorkS = 0.0;
+    public static final double kElevatorkS = 0.6;
     public static final double kElevatorkG = 0.0;
     public static final double kElevatorkV = 0.0;
     public static final double kElevatorkA = 0.0;
