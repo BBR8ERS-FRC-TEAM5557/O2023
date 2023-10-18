@@ -30,6 +30,6 @@ public class Constants {
         public static final int kWristMotor = 40;
         public static final int kRollerMotor = 41;
 
-        public static final int kLedsDIO = 0;
+        public static final int kLedsDIO = 9;
     }
 }

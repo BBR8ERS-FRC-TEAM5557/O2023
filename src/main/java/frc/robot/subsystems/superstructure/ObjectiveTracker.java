@@ -56,6 +56,10 @@ public class ObjectiveTracker {
         return new InstantCommand(() -> shiftNode(direction)).ignoringDisable(true);
     }
 
+    public static Command setNodeCommand(NodeLevel level) {
+        return new InstantCommand(() -> nodeLevel = level);
+    }
+
     public static enum NodeLevel {
         HYBRID, MID, HIGH
     }

@@ -20,7 +20,7 @@ public class WristIOSparkMax implements WristIO {
     private final CANSparkMax m_master;
 
     private final RelativeEncoder m_encoder;
-    private final SparkMaxAbsoluteEncoder m_absoluteEncoder;
+    //private final SparkMaxAbsoluteEncoder m_absoluteEncoder;
     private final SparkMaxPIDController m_pid;
     private final ArmFeedforward m_feedforward;
 
@@ -34,13 +34,14 @@ public class WristIOSparkMax implements WristIO {
         m_encoder = m_master.getEncoder();
         m_pid = m_master.getPIDController();
 
-        m_absoluteEncoder = m_master.getAbsoluteEncoder(Type.kDutyCycle);
-        m_absoluteEncoder.setPositionConversionFactor(360.0);
-        m_absoluteEncoder.setVelocityConversionFactor(360.0);
-        m_absoluteEncoder.setInverted(true);
-        m_absoluteEncoder.setZeroOffset(339.75 - 180.0); //subtract for more down
-        m_pid.setFeedbackDevice(m_absoluteEncoder);
-        m_encoder.setPosition(degreesToRotations(m_absoluteEncoder.getPosition()));
+        //m_absoluteEncoder = m_master.getAbsoluteEncoder(Type.kDutyCycle);
+        //m_absoluteEncoder.setPositionConversionFactor(360.0);
+        //m_absoluteEncoder.setVelocityConversionFactor(360.0);
+        //m_absoluteEncoder.setInverted(true);
+        //m_absoluteEncoder.setZeroOffset(339.75 - 180.0); //subtract for more down
+        m_pid.setFeedbackDevice(m_encoder);
+        //m_encoder.setPosition(degreesToRotations(m_absoluteEncoder.getPosition()));
+        m_encoder.setPosition(degreesToRotations(kEncoderHomePosition));
         BurnManager.burnFlash(m_master);
 
         SparkMaxFactory.configFramesLeaderOrFollower(m_master);
@@ -54,8 +55,8 @@ public class WristIOSparkMax implements WristIO {
     public void updateInputs(WristIOInputs inputs) {
         inputs.WristInternalPositionDeg = rotationsToDegrees(m_encoder.getPosition());
         inputs.WristInternalVelocityDegPerSec = rotationsToDegrees(m_encoder.getVelocity()) / 60.0;
-        inputs.WristAbsolutePositionDeg = m_absoluteEncoder.getPosition();
-        inputs.WristAbsoluteVelocityDegPerSec = m_absoluteEncoder.getVelocity();
+        //inputs.WristAbsolutePositionDeg = m_absoluteEncoder.getPosition();
+        //inputs.WristAbsoluteVelocityDegPerSec = m_absoluteEncoder.getVelocity();
         inputs.WristAppliedVolts = m_master.getAppliedOutput() * m_master.getBusVoltage();
         inputs.WristCurrentAmps = new double[] { m_master.getOutputCurrent() };
         inputs.WristTempCelsius = new double[] { m_master.getMotorTemperature() };
@@ -81,7 +82,9 @@ public class WristIOSparkMax implements WristIO {
     public void setAngleDegrees(double targetAngleDegrees, double targetVelocityDegreesPerSec) {
         double ff = m_feedforward.calculate(targetAngleDegrees, targetVelocityDegreesPerSec);
         targetAngleDegrees = constrainDegrees(targetAngleDegrees);
-        m_pid.setReference(targetAngleDegrees, ControlType.kPosition, 0, ff);
+        double targetRotation = degreesToRotations(targetAngleDegrees);
+        //m_pid.setReference(targetRotation, ControlType.kPosition, 0, ff);
+        m_pid.setReference(targetRotation, ControlType.kPosition, 0, ff);
     }
 
     public void resetSensorPosition(double angleDegrees) {

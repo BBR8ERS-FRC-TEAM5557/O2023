@@ -29,6 +29,7 @@ import frc.robot.subsystems.superstructure.ObjectiveTracker;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.ObjectiveTracker.Direction;
 import frc.robot.subsystems.superstructure.ObjectiveTracker.GamePiece;
+import frc.robot.subsystems.superstructure.ObjectiveTracker.NodeLevel;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.commands.TeleopDrive;
@@ -53,9 +54,9 @@ public class RobotContainer {
     public static Elevator m_elevator;
     public static Wrist m_wrist;
     public static Roller m_roller;
-
+    public static LEDs m_leds;
     public static RobotStateEstimator m_stateEstimator;
-
+    
     public static AutoRoutineManager m_autoManager;
     public static SystemsCheckManager m_systemCheckManager;
 
@@ -92,6 +93,7 @@ public class RobotContainer {
         m_autoManager = new AutoRoutineManager(m_swerve, m_elevator);
         m_systemCheckManager = new SystemsCheckManager(m_swerve);
         m_stateEstimator = RobotStateEstimator.getInstance();
+        m_leds = LEDs.getInstance();
         DriveMotionPlanner.configureControllers();
 
         configureBindings();
@@ -154,13 +156,18 @@ public class RobotContainer {
 
         // Adjusts the scoring objective
         new Trigger(() -> m_operator.getPOV() == 0)
-                .onTrue(ObjectiveTracker.shiftNodeCommand(Direction.UP));
+                .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.HIGH));
+        new Trigger(() -> m_operator.getPOV() == 90)
+            .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.MID));
+        new Trigger(() -> m_operator.getPOV() == 270)
+            .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.MID));
         new Trigger(() -> m_operator.getPOV() == 180)
-                .onTrue(ObjectiveTracker.shiftNodeCommand(Direction.DOWN));
+            .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.HYBRID));
 
         // Manual Elevator
         new Trigger(m_operator::getLeftStickButton).whileTrue(m_elevator.homeElevator());
-
+        new Trigger(m_operator::getRightStickButton).whileTrue(m_wrist.homeWrist());
+ 
         new Trigger(m_operator::getStartButton)
                 .whileTrue(m_elevator.runElevatorOpenLoop(() -> getElevatorJogger()))
                 .whileTrue(m_wrist.runWristOpenLoop(() -> getWristJogger()))

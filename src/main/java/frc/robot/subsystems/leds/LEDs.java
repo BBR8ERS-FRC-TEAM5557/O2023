@@ -47,9 +47,7 @@ public class LEDs extends VirtualSubsystem {
 
     // Constants
     private static final int minLoopCycleCount = 10;
-    private static final int length = 43;
-    private static final int staticLength = 14;
-    private static final int staticSectionLength = 3;
+    private static final int length = 36;
     private static final double strobeSlowDuration = 0.2;
     private static final double breathDuration = 1.0;
     private static final double waveExponent = 0.4;
@@ -99,7 +97,7 @@ public class LEDs extends VirtualSubsystem {
         loadingNotifier.stop();
 
         // Default to off
-        solid(Section.FULL, Color.kBlack);
+        solid(Section.FULL, Color.kAliceBlue);
 
         if (DriverStation.isDisabled()) {
             if (lowBatteryAlert) {
@@ -139,7 +137,7 @@ public class LEDs extends VirtualSubsystem {
                 default:
                     break;
             }
-            breath(Section.BRACE, hpColor, Color.kBlack, 1.0);
+            breath(Section.FULL, hpColor, Color.kBlack, 1.0);
         }
 
         // Set special modes
@@ -216,16 +214,10 @@ public class LEDs extends VirtualSubsystem {
     }
 
     private static enum Section {
-        ELEVATOR_LEFT, ELEVATOR_RIGHT, BRACE, FULL;
+        FULL;
 
         private int start() {
             switch (this) {
-                case ELEVATOR_LEFT:
-                    return 0;
-                case ELEVATOR_RIGHT:
-                    return staticLength;
-                case BRACE:
-                    return 0;
                 case FULL:
                     return 0;
                 default:
@@ -235,14 +227,8 @@ public class LEDs extends VirtualSubsystem {
 
         private int end() {
             switch (this) {
-                case ELEVATOR_LEFT:
-                    return staticLength;
-                case ELEVATOR_RIGHT:
-                    return length;
-                case BRACE:
-                    return length;
                 case FULL:
-                    return staticSectionLength;
+                    return length;
                 default:
                     return length;
             }

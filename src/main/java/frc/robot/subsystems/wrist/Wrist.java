@@ -131,8 +131,8 @@ public class Wrist extends SubsystemBase {
     }
 
     public synchronized TrapezoidProfile.State getState() {
-        return new TrapezoidProfile.State(m_inputs.WristAbsolutePositionDeg,
-                m_inputs.WristAbsoluteVelocityDegPerSec);
+        //return new TrapezoidProfile.State(m_inputs.WristAbsolutePositionDeg, m_inputs.WristAbsoluteVelocityDegPerSec);
+        return new TrapezoidProfile.State(m_inputs.WristInternalPositionDeg, m_inputs.WristInternalVelocityDegPerSec);
     }
 
 
@@ -144,7 +144,7 @@ public class Wrist extends SubsystemBase {
     public Command homeWrist() {
         return Commands
                 .sequence(new InstantCommand(() -> m_io.shouldEnableUpperLimit(false)),
-                        new RunCommand(() -> runVoltage(-kHomeVoltage), this)
+                        new RunCommand(() -> runVoltage(kHomeVoltage), this)
                                 .until(() -> m_inputs.WristCurrentAmps[0] > kHomeAmpsThreshold),
                         new InstantCommand(() -> m_io.resetSensorPosition(kEncoderHomePosition)),
                         setWristAngleProfiled(kEncoderHomePosition))
