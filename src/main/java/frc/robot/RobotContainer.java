@@ -27,7 +27,6 @@ import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOSparkMax;
 import frc.robot.subsystems.superstructure.ObjectiveTracker;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.ObjectiveTracker.Direction;
 import frc.robot.subsystems.superstructure.ObjectiveTracker.GamePiece;
 import frc.robot.subsystems.superstructure.ObjectiveTracker.NodeLevel;
 import frc.robot.subsystems.swerve.Swerve;
@@ -56,7 +55,7 @@ public class RobotContainer {
     public static Roller m_roller;
     public static LEDs m_leds;
     public static RobotStateEstimator m_stateEstimator;
-    
+
     public static AutoRoutineManager m_autoManager;
     public static SystemsCheckManager m_systemCheckManager;
 
@@ -71,23 +70,32 @@ public class RobotContainer {
             m_wrist = new Wrist(new WristIOSparkMax());
             m_roller = new Roller(new RollerIOSparkMax());
         } else {
-            m_swerve = new Swerve(new GyroIO() {}, new ModuleIOSim(), new ModuleIOSim(),
+            m_swerve = new Swerve(new GyroIO() {
+            }, new ModuleIOSim(), new ModuleIOSim(),
                     new ModuleIOSim(), new ModuleIOSim());
         }
 
         // Instantiate missing subsystems
         if (m_swerve == null) {
-            m_swerve = new Swerve(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {},
-                    new ModuleIO() {}, new ModuleIO() {});
+            m_swerve = new Swerve(new GyroIO() {
+            }, new ModuleIO() {
+            }, new ModuleIO() {
+            },
+                    new ModuleIO() {
+                    }, new ModuleIO() {
+                    });
         }
         if (m_elevator == null) {
-            m_elevator = new Elevator(new ElevatorIO() {});
+            m_elevator = new Elevator(new ElevatorIO() {
+            });
         }
         if (m_wrist == null) {
-            m_wrist = new Wrist(new WristIO() {});
+            m_wrist = new Wrist(new WristIO() {
+            });
         }
         if (m_roller == null) {
-            m_roller = new Roller(new RollerIO() {});
+            m_roller = new Roller(new RollerIO() {
+            });
         }
 
         m_autoManager = new AutoRoutineManager(m_swerve, m_elevator);
@@ -119,7 +127,7 @@ public class RobotContainer {
         // Driver sets cone intake
         new Trigger(m_operator::getLeftBumper)
                 .onTrue(new InstantCommand(
-                        () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
+                        () -> m_swerve.setKinematicLimits(SwerveConstants.kIntakingLimits)))
                 .onFalse(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kUncappedLimits)))
                 .whileTrue(Superstructure.intakeGroundCone());
@@ -127,7 +135,7 @@ public class RobotContainer {
         // Operator sets cube intake
         new Trigger(() -> m_operator.getLeftTriggerAxis() > 0.5)
                 .onTrue(new InstantCommand(
-                        () -> m_swerve.setKinematicLimits(SwerveConstants.kScoringLimits)))
+                        () -> m_swerve.setKinematicLimits(SwerveConstants.kIntakingLimits)))
                 .onFalse(new InstantCommand(
                         () -> m_swerve.setKinematicLimits(SwerveConstants.kUncappedLimits)))
                 .whileTrue(Superstructure.intakeGroundCube());
@@ -158,22 +166,21 @@ public class RobotContainer {
         new Trigger(() -> m_operator.getPOV() == 0)
                 .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.HIGH));
         new Trigger(() -> m_operator.getPOV() == 90)
-            .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.MID));
+                .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.MID));
         new Trigger(() -> m_operator.getPOV() == 270)
-            .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.MID));
+                .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.MID));
         new Trigger(() -> m_operator.getPOV() == 180)
-            .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.HYBRID));
+                .onTrue(ObjectiveTracker.setNodeCommand(NodeLevel.HYBRID));
 
         // Manual Elevator
         new Trigger(m_operator::getLeftStickButton).whileTrue(m_elevator.homeElevator());
         new Trigger(m_operator::getRightStickButton).whileTrue(m_wrist.homeWrist());
- 
+
         new Trigger(m_operator::getStartButton)
                 .whileTrue(m_elevator.runElevatorOpenLoop(() -> getElevatorJogger()))
                 .whileTrue(m_wrist.runWristOpenLoop(() -> getWristJogger()))
                 .onFalse(m_elevator.runElevatorOpenLoop(() -> 0.0))
                 .onFalse(m_wrist.runWristOpenLoop(() -> 0.0));
-
 
         // Endgame alerts
         new Trigger(() -> DriverStation.isTeleopEnabled() && DriverStation.getMatchTime() > 0.0
@@ -189,23 +196,23 @@ public class RobotContainer {
 
         new Trigger(() -> DriverStation.isTeleopEnabled() && DriverStation.getMatchTime() > 0.0
                 && DriverStation.getMatchTime() <= Math.round(15.0))
-                        .onTrue(Commands.sequence(Commands.run(() -> {
-                            LEDs.getInstance().endgameAlert = true;
-                            m_driver.setRumble(RumbleType.kBothRumble, 1.0);
-                            m_operator.setRumble(RumbleType.kBothRumble, 1.0);
-                        }).withTimeout(0.5), Commands.run(() -> {
-                            LEDs.getInstance().endgameAlert = false;
-                            m_driver.setRumble(RumbleType.kBothRumble, 0.0);
-                            m_operator.setRumble(RumbleType.kBothRumble, 0.0);
-                        }).withTimeout(0.5), Commands.run(() -> {
-                            LEDs.getInstance().endgameAlert = true;
-                            m_driver.setRumble(RumbleType.kBothRumble, 1.0);
-                            m_operator.setRumble(RumbleType.kBothRumble, 1.0);
-                        }).withTimeout(0.5), Commands.run(() -> {
-                            LEDs.getInstance().endgameAlert = false;
-                            m_driver.setRumble(RumbleType.kBothRumble, 0.0);
-                            m_operator.setRumble(RumbleType.kBothRumble, 0.0);
-                        }).withTimeout(1.0)));
+                .onTrue(Commands.sequence(Commands.run(() -> {
+                    LEDs.getInstance().endgameAlert = true;
+                    m_driver.setRumble(RumbleType.kBothRumble, 1.0);
+                    m_operator.setRumble(RumbleType.kBothRumble, 1.0);
+                }).withTimeout(0.5), Commands.run(() -> {
+                    LEDs.getInstance().endgameAlert = false;
+                    m_driver.setRumble(RumbleType.kBothRumble, 0.0);
+                    m_operator.setRumble(RumbleType.kBothRumble, 0.0);
+                }).withTimeout(0.5), Commands.run(() -> {
+                    LEDs.getInstance().endgameAlert = true;
+                    m_driver.setRumble(RumbleType.kBothRumble, 1.0);
+                    m_operator.setRumble(RumbleType.kBothRumble, 1.0);
+                }).withTimeout(0.5), Commands.run(() -> {
+                    LEDs.getInstance().endgameAlert = false;
+                    m_driver.setRumble(RumbleType.kBothRumble, 0.0);
+                    m_operator.setRumble(RumbleType.kBothRumble, 0.0);
+                }).withTimeout(1.0)));
 
     }
 
@@ -235,6 +242,25 @@ public class RobotContainer {
 
     public double getWristJogger() {
         return -square(deadband(m_operator.getRightY(), 0.15));
+    }
+
+    public static Command getDriverAlertCommand() {
+        return Commands.sequence(Commands.run(() -> {
+            m_driver.setRumble(RumbleType.kBothRumble, 0.5);
+            m_operator.setRumble(RumbleType.kBothRumble, 0.5);
+        }).withTimeout(0.5), Commands.run(() -> {
+            LEDs.getInstance().endgameAlert = false;
+            m_driver.setRumble(RumbleType.kBothRumble, 0.0);
+            m_operator.setRumble(RumbleType.kBothRumble, 0.0);
+        }).withTimeout(0.5), Commands.run(() -> {
+            LEDs.getInstance().endgameAlert = true;
+            m_driver.setRumble(RumbleType.kBothRumble, 0.5);
+            m_operator.setRumble(RumbleType.kBothRumble, 0.5);
+        }).withTimeout(0.5), Commands.run(() -> {
+            LEDs.getInstance().endgameAlert = false;
+            m_driver.setRumble(RumbleType.kBothRumble, 0.0);
+            m_operator.setRumble(RumbleType.kBothRumble, 0.0);
+        }));
     }
 
     private static double deadband(double value, double tolerance) {

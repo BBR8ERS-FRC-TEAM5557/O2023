@@ -25,12 +25,12 @@ public class ElevatorConstants {
     public static final double kHomeVoltage = 4.0;
     public static final double kHomeAmpsThreshold = 20.0;
 
-    public static final double kElevatorkP = 0.05;
+    public static final double kElevatorkP = 0.065;
     public static final double kElevatorkI = 0.0;
     public static final double kElevatorkD = 0.0;
 
-    public static final double kElevatorkS = 0.6;
-    public static final double kElevatorkG = 0.0;
+    public static final double kElevatorkS = 0.0;
+    public static final double kElevatorkG = 0.4;
     public static final double kElevatorkV = 0.0;
     public static final double kElevatorkA = 0.0;
     

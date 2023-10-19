@@ -66,7 +66,7 @@ public class LEDs extends VirtualSubsystem {
         leds.start();
         loadingNotifier = new Notifier(() -> {
             synchronized (this) {
-                breath(Section.FULL, Color.kWhite, Color.kBlack, 0.25,
+                breath(Section.FULL, Color.kWhite, Color.kBlack, 0.5,
                         System.currentTimeMillis() / 1000.0);
                 leds.setData(buffer);
             }
@@ -97,7 +97,7 @@ public class LEDs extends VirtualSubsystem {
         loadingNotifier.stop();
 
         // Default to off
-        solid(Section.FULL, Color.kAliceBlue);
+        solid(Section.FULL, Color.kBlack);
 
         if (DriverStation.isDisabled()) {
             if (lowBatteryAlert) {

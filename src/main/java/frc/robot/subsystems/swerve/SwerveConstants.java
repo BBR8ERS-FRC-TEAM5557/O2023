@@ -51,7 +51,7 @@ public class SwerveConstants {
     public static final double kRotationkI = 0.0;
     public static final double kRotationkD = 0.0;
 
-    public static final double kSnapMaxOmega = kMaxOmega * 0.35;
+    public static final double kSnapMaxOmega = kMaxOmega * 0.3;
     public static final double kSnapMaxAlpha = kSnapMaxOmega / 0.75;
 
 
@@ -63,10 +63,18 @@ public class SwerveConstants {
             kUncappedLimits.kMaxAngularVelocity = kMaxOmega * 0.75;
     }
 
+    public static final KinematicLimits kIntakingLimits = new KinematicLimits();
+    static {
+        kIntakingLimits.kMaxDriveVelocity = 2.75;
+        kIntakingLimits.kMaxDriveAcceleration = Double.MAX_VALUE;
+        kIntakingLimits.kMaxAzimuthVelocity = 20.0;
+        kIntakingLimits.kMaxAngularVelocity = Math.PI;  // Rad/Sec
+    }
+
     public static final KinematicLimits kScoringLimits = new KinematicLimits();
     static {
             kScoringLimits.kMaxDriveVelocity = 2.0;
-            kScoringLimits.kMaxDriveAcceleration = 20.0;
+            kScoringLimits.kMaxDriveAcceleration = 1.0;
             kScoringLimits.kMaxAzimuthVelocity = 20.0;
             kScoringLimits.kMaxAngularVelocity = Math.PI;  // Rad/Sec
     }

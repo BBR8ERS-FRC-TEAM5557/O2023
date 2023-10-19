@@ -44,6 +44,12 @@ public class Elevator extends SubsystemBase {
         System.out.println("[Init] Creating Elevator");
         this.m_io = io;
 
+        // Automatic Home Trigger
+        new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode == ControlMode.MOTION_PROFILE)
+                && (Util.epsilonEquals(m_demand, 0.75, 0.25))
+                && (Util.epsilonEquals(m_inputs.ElevatorHeightInches, 0.75, 0.5)))
+                .onTrue(homeElevator());
+
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Elevator");
         shuffleboardTab.addNumber("Position", () -> Util.truncate(getState().position, 2))
                 .withWidget(BuiltInWidgets.kGraph);
@@ -59,7 +65,6 @@ public class Elevator extends SubsystemBase {
         shuffleboardTab
                 .addNumber("Current", () -> Util.truncate(m_inputs.ElevatorCurrentAmps[0], 2))
                 .withWidget(BuiltInWidgets.kGraph);
-
 
         shuffleboardTab.addString("Control Mode", () -> getControlMode().name());
         shuffleboardTab.addString("Command",
@@ -87,7 +92,8 @@ public class Elevator extends SubsystemBase {
 
         if (cruiseVelocity.hasChanged(cruiseVelocity.hashCode())
                 || desiredTimeToSpeed.hasChanged(desiredTimeToSpeed.hashCode())) {
-            m_constraints = new TrapezoidProfile.Constraints(cruiseVelocity.get(), (cruiseVelocity.get() / desiredTimeToSpeed.get()));
+            m_constraints = new TrapezoidProfile.Constraints(cruiseVelocity.get(),
+                    (cruiseVelocity.get() / desiredTimeToSpeed.get()));
         }
     }
 
@@ -138,8 +144,7 @@ public class Elevator extends SubsystemBase {
                         new RunCommand(() -> runVoltage(-kHomeVoltage), this)
                                 .until(() -> m_inputs.ElevatorCurrentAmps[0] > kHomeAmpsThreshold),
                         new InstantCommand(() -> m_io.resetSensorPosition(kEncoderHomePosition)),
-                        new InstantCommand(() -> runVoltage(0.0), this)
-                        )
+                        new InstantCommand(() -> runVoltage(0.0), this))
                 .finallyDo(
                         interupted -> new InstantCommand(() -> m_io.shouldEnableLowerLimit(true)));
     }
