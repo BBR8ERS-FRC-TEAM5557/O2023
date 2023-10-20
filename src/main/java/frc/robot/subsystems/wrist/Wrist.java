@@ -21,9 +21,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team6328.TunableNumber;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.wrist.WristIO.WristIOInputs;
 import frc.robot.util.Util;
 
@@ -56,10 +54,6 @@ public class Wrist extends SubsystemBase {
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Wrist");
         shuffleboardTab.addNumber("Position Internal", () -> Util.truncate(getState().position, 2))
-                .withWidget(BuiltInWidgets.kGraph);
-        shuffleboardTab
-                .addNumber("Position Absolute",
-                        () -> Util.truncate(m_inputs.WristAbsolutePositionDeg, 2))
                 .withWidget(BuiltInWidgets.kGraph);
         shuffleboardTab.addNumber("Velocity", () -> Util.truncate(getState().velocity, 2))
                 .withWidget(BuiltInWidgets.kGraph);

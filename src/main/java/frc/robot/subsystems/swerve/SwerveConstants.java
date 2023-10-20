@@ -1,8 +1,9 @@
 package frc.robot.subsystems.swerve;
 
 import com.revrobotics.CANSparkMax.IdleMode;
-
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.lib.team5557.factory.SparkMaxFactory.PIDConfiguration;
 import frc.lib.team5557.factory.SparkMaxFactory.SparkMaxConfiguration;
@@ -131,7 +132,12 @@ public class SwerveConstants {
         new Translation2d(-kWheelBase / 2.0, -kTrackWidth / 2.0)
     };
 
-
+    public static final SwerveModuleState[] kXOutSwerveModuleStates = {
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(45)),
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45)),
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45)),
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(45))
+    };
 
     /**
      * @param counts    NEO Rotations

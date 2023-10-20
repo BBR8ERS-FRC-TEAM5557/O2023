@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team6328.TunableNumber;
 import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 import frc.robot.util.Util;
@@ -44,11 +43,6 @@ public class Elevator extends SubsystemBase {
         System.out.println("[Init] Creating Elevator");
         this.m_io = io;
 
-        // Automatic Home Trigger
-        /*new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode == ControlMode.MOTION_PROFILE)
-                && (Util.epsilonEquals(m_demand, 0.75, 0.25))
-                && (Util.epsilonEquals(m_inputs.ElevatorHeightInches, 0.75, 0.5)))
-                .onTrue(homeElevator());*/
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Elevator");
         shuffleboardTab.addNumber("Position", () -> Util.truncate(getState().position, 2))

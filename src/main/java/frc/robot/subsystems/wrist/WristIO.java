@@ -5,8 +5,6 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 public interface WristIO {
     public static class WristIOInputs implements LoggableInputs {
-        public double WristAbsolutePositionDeg = 0.0;
-        public double WristAbsoluteVelocityDegPerSec = 0.0;
         public double WristInternalPositionDeg = 0.0;
         public double WristInternalVelocityDegPerSec = 0.0;
         public double WristAppliedVolts = 0.0;
@@ -15,8 +13,6 @@ public interface WristIO {
 
         @Override
         public void toLog(LogTable table) {
-            table.put("WristAbsolutePositionDeg", WristAbsolutePositionDeg);
-            table.put("WristAbsoluteVelocityDegPerSec", WristAbsoluteVelocityDegPerSec);
             table.put("WristInternalPositionDeg", WristInternalPositionDeg);
             table.put("WristInternalVelocityDegPerSec", WristInternalVelocityDegPerSec);
             table.put("WristAppliedVolts", WristAppliedVolts);
@@ -26,8 +22,6 @@ public interface WristIO {
 
         @Override
         public void fromLog(LogTable table) {
-            WristAbsolutePositionDeg = table.getDouble("WristHeightInches", WristAbsolutePositionDeg);
-            WristAbsoluteVelocityDegPerSec = table.getDouble("WristVelocityRPM", WristAbsoluteVelocityDegPerSec);
             WristAppliedVolts = table.getDouble("WristAppliedVolts", WristAppliedVolts);
             WristCurrentAmps = table.getDoubleArray("WristCurrentAmps", WristCurrentAmps);
             WristTempCelsius = table.getDoubleArray("WristTempCelsius", WristTempCelsius);

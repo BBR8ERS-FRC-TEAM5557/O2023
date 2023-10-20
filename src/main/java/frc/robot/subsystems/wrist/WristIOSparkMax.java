@@ -1,26 +1,33 @@
 package frc.robot.subsystems.wrist;
 
+import static frc.robot.subsystems.wrist.WristConstants.constrainDegrees;
+import static frc.robot.subsystems.wrist.WristConstants.degreesToRotations;
+import static frc.robot.subsystems.wrist.WristConstants.kEncoderHomePosition;
+import static frc.robot.subsystems.wrist.WristConstants.kMasterMotorConfiguration;
+import static frc.robot.subsystems.wrist.WristConstants.kWristkA;
+import static frc.robot.subsystems.wrist.WristConstants.kWristkD;
+import static frc.robot.subsystems.wrist.WristConstants.kWristkG;
+import static frc.robot.subsystems.wrist.WristConstants.kWristkI;
+import static frc.robot.subsystems.wrist.WristConstants.kWristkP;
+import static frc.robot.subsystems.wrist.WristConstants.kWristkS;
+import static frc.robot.subsystems.wrist.WristConstants.kWristkV;
+import static frc.robot.subsystems.wrist.WristConstants.rotationsToDegrees;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import frc.lib.team5557.factory.BurnManager;
 import frc.lib.team5557.factory.SparkMaxFactory;
 import frc.lib.team6328.TunableNumber;
 
-import static frc.robot.subsystems.wrist.WristConstants.*;
-
 public class WristIOSparkMax implements WristIO {
 
     private final CANSparkMax m_master;
 
     private final RelativeEncoder m_encoder;
-    //private final SparkMaxAbsoluteEncoder m_absoluteEncoder;
     private final SparkMaxPIDController m_pid;
     private final ArmFeedforward m_feedforward;
 
@@ -33,14 +40,7 @@ public class WristIOSparkMax implements WristIO {
         m_master = SparkMaxFactory.createNEO(kMasterMotorConfiguration);
         m_encoder = m_master.getEncoder();
         m_pid = m_master.getPIDController();
-
-        //m_absoluteEncoder = m_master.getAbsoluteEncoder(Type.kDutyCycle);
-        //m_absoluteEncoder.setPositionConversionFactor(360.0);
-        //m_absoluteEncoder.setVelocityConversionFactor(360.0);
-        //m_absoluteEncoder.setInverted(true);
-        //m_absoluteEncoder.setZeroOffset(339.75 - 180.0); //subtract for more down
         m_pid.setFeedbackDevice(m_encoder);
-        //m_encoder.setPosition(degreesToRotations(m_absoluteEncoder.getPosition()));
         m_encoder.setPosition(degreesToRotations(kEncoderHomePosition));
         BurnManager.burnFlash(m_master);
 
@@ -55,8 +55,6 @@ public class WristIOSparkMax implements WristIO {
     public void updateInputs(WristIOInputs inputs) {
         inputs.WristInternalPositionDeg = rotationsToDegrees(m_encoder.getPosition());
         inputs.WristInternalVelocityDegPerSec = rotationsToDegrees(m_encoder.getVelocity()) / 60.0;
-        //inputs.WristAbsolutePositionDeg = m_absoluteEncoder.getPosition();
-        //inputs.WristAbsoluteVelocityDegPerSec = m_absoluteEncoder.getVelocity();
         inputs.WristAppliedVolts = m_master.getAppliedOutput() * m_master.getBusVoltage();
         inputs.WristCurrentAmps = new double[] { m_master.getOutputCurrent() };
         inputs.WristTempCelsius = new double[] { m_master.getMotorTemperature() };

@@ -111,6 +111,7 @@ public class AutoRoutineManager {
 
         m_chooser.addOption("Score Cone (A)",
                 Commands.sequence(new PrintCommand("Starting Score Cone"),
+                        getPoseResetCommand(m_trajectoryMap.get("RightToIntake")),
                         Superstructure.scoreConeLevel(NodeLevel.HIGH)));
 
     }

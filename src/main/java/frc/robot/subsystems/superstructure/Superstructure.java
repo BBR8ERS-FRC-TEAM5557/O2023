@@ -34,6 +34,7 @@ public class Superstructure {
                 return Commands.sequence(
                                 new InstantCommand(() -> setCurrentGoal(goal)),
                                 elevator.setElevatorHeightProfiled(goal.elevator),
+                                wrist.setWristAngleProfiled(260.0).unless(() -> goal.elevator < SuperstructureGoal.L2_CUBE.elevator),
                                 elevator.extendWaitCommand(goal.elevator - 15.0),
                                 wrist.setWristAngleProfiled(goal.wrist));
         }

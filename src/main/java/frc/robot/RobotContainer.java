@@ -60,6 +60,7 @@ public class RobotContainer {
     public static SystemsCheckManager m_systemCheckManager;
 
     public RobotContainer() {
+        m_leds = LEDs.getInstance();
         if (kIsReal) {
             m_swerve = new Swerve(new GyroIOPigeon2(),
                     new ModuleIOSparkMax(0, kFLDriveMotor, kFLTurnMotor, kFLCancoder, kFLOffset),
@@ -101,7 +102,6 @@ public class RobotContainer {
         m_autoManager = new AutoRoutineManager(m_swerve, m_elevator);
         m_systemCheckManager = new SystemsCheckManager(m_swerve);
         m_stateEstimator = RobotStateEstimator.getInstance();
-        m_leds = LEDs.getInstance();
         DriveMotionPlanner.configureControllers();
 
         configureBindings();
