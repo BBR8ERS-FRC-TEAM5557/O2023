@@ -83,7 +83,7 @@ public class AutoRoutineManager {
         m_chooser.addOption("2 Piece (F)",
                 Commands.sequence(new PrintCommand("2 Piece (F)"),
                         getPoseResetCommand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
-                        Superstructure.scoreCubeLevel(NodeLevel.HYBRID),
+                        Superstructure.scoreConeLevel(NodeLevel.HIGH),
                         elevator.tuckWaitCommand(10.0),
                         getFollowComand(m_trajectoryMap.get("LeftToSweepToCubeScore")),
                         Superstructure.scoreCubeLevel(NodeLevel.HIGH)));
@@ -105,7 +105,7 @@ public class AutoRoutineManager {
         m_chooser.addOption("1 Piece + Evac/Intake (B)",
                 Commands.sequence(new PrintCommand("Starting 1 Piece + 1 Pause (B)"),
                         getPoseResetCommand(m_trajectoryMap.get("RightToIntake")),
-                        Superstructure.scoreCubeLevel(NodeLevel.HYBRID),
+                        Superstructure.scoreConeLevel(NodeLevel.HIGH),
                         elevator.tuckWaitCommand(10.0),
                         getFollowComand(m_trajectoryMap.get("RightToIntake"))));
 
@@ -147,24 +147,21 @@ public class AutoRoutineManager {
     }
 
     private Command getFollowComand(PathPlannerTrajectory path) {
-        PathPlannerTrajectory transformedPath = PathPlannerTrajectory
-                .transformTrajectoryForAlliance(path, DriverStation.getAlliance());
-
-        PPSwerveControllerCommand followCommand = new PPSwerveControllerCommand(transformedPath,
+        PPSwerveControllerCommand followCommand = new PPSwerveControllerCommand(path,
                 RobotStateEstimator.getInstance()::getPose,
                 DriveMotionPlanner.getForwardController(), // X controller
                 DriveMotionPlanner.getStrafeController(), // Y controller
                 DriveMotionPlanner.getRotationController(), // Rotation controller
                 swerve::driveOpenLoop, // Module states consumer
-                false, // Should the path be mirrored depending on alliance color.
+                true, // Should the path be mirrored depending on alliance color.
                 swerve // Requires swerve subsystem
         );
 
         return new FollowPathWithEvents(followCommand, path.getMarkers(), m_eventMap).alongWith(
                 new InstantCommand(
-                        () -> Logger.getInstance().recordOutput("PathFollowing", transformedPath)),
+                        () -> Logger.getInstance().recordOutput("PathFollowing", path)),
                 new InstantCommand(() -> RobotStateEstimator.getInstance()
-                        .addFieldTrajectory("AutoTrajectory", transformedPath)));
+                        .addFieldTrajectory("AutoTrajectory", path)));
     }
 
     private Command getPoseResetCommand(PathPlannerTrajectory path) {

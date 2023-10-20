@@ -127,7 +127,7 @@ public class Superstructure {
 
                 GROUND_CONE_INTAKE(0.0, 190.0), GROUND_CUBE_INTAKE(0.0, 180.0),
 
-                SHELF_CONE_INTAKE(5.0, 200.0), SHELF_CUBE_INTAKE(5.0, 200.0),
+                SHELF_CONE_INTAKE(19.4, 190.0), SHELF_CUBE_INTAKE(19.4, 190.0),
 
                 SLIDE_CUBE_INTAKE(5.0, 200.0),
 
@@ -135,7 +135,7 @@ public class Superstructure {
 
                 L1_SCORE(0.0, 235.0),
 
-                L2_CONE(16.5, 210.0), L2_CUBE(15.0, 200.0),
+                L2_CONE(16.5, 200.0), L2_CUBE(12.0, 200.0),
 
                 L3_CONE(23.5, 210.0), L3_CUBE(20.0, 200.0);
 

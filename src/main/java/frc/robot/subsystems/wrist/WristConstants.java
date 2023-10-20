@@ -15,7 +15,7 @@ public class WristConstants {
     public static final double kSecondSprocketTeethCount = 48.0; //teeth
     public static final double kRotationsPerDegree = kGearReduction * (kSecondSprocketTeethCount / kFirstSprocketTeethCount) / 360.0;
 
-    public static final double kEncoderHomePosition = 270.0; //degrees
+    public static final double kEncoderHomePosition = 279.5; //degrees
     public static final double kPadding = 1.0; // degrees
     public static final double kCruiseVelocity = 150.0; // degrees/sec
     public static final double kTimeToCruise = 0.1; // sec
@@ -26,7 +26,7 @@ public class WristConstants {
     public static final double kMinAngle = 170.0; //degrees
     public static final double kMaxAngle = 270.0; //degrees
 
-    public static final double kWristkP = 0.1;
+    public static final double kWristkP = 0.08;
     public static final double kWristkI = 0.0;
     public static final double kWristkD = 0.0;
 
@@ -59,7 +59,7 @@ public class WristConstants {
 
         kMasterMotorConfiguration.kVoltageCompensation = 12.0;
         kMasterMotorConfiguration.kShouldInvert = true;
-        kMasterMotorConfiguration.kIdleMode = IdleMode.kBrake;
+        kMasterMotorConfiguration.kIdleMode = IdleMode.kCoast;
         kMasterMotorConfiguration.kOpenLoopRampRate = 1.0;
         kMasterMotorConfiguration.kClosedLoopRampRate = 0.5;
         kMasterMotorConfiguration.kSmartCurrentLimit = 30.0;

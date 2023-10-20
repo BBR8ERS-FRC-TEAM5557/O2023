@@ -49,7 +49,7 @@ public class Robot extends LoggedRobot {
             String folder = "";
             logger.addDataReceiver(new WPILOGWriter(folder));
             logger.addDataReceiver(new NT4Publisher());
-            LoggedPowerDistribution.getInstance(50, ModuleType.kRev);
+            LoggedPowerDistribution.getInstance(0, ModuleType.kRev);
         } else {
             logger.addDataReceiver(new NT4Publisher());
         }

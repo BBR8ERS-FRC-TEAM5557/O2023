@@ -246,20 +246,21 @@ public class RobotContainer {
 
     public static Command getDriverAlertCommand() {
         return Commands.sequence(Commands.run(() -> {
-            m_driver.setRumble(RumbleType.kBothRumble, 0.5);
-            m_operator.setRumble(RumbleType.kBothRumble, 0.5);
-        }).withTimeout(0.5), Commands.run(() -> {
-            LEDs.getInstance().endgameAlert = false;
+            m_driver.setRumble(RumbleType.kBothRumble, 0.75);
+            m_operator.setRumble(RumbleType.kBothRumble, 0.75);
+            LEDs.getInstance().intakeCaught = true;
+        }).withTimeout(0.25), Commands.run(() -> {
             m_driver.setRumble(RumbleType.kBothRumble, 0.0);
             m_operator.setRumble(RumbleType.kBothRumble, 0.0);
-        }).withTimeout(0.5), Commands.run(() -> {
-            LEDs.getInstance().endgameAlert = true;
-            m_driver.setRumble(RumbleType.kBothRumble, 0.5);
-            m_operator.setRumble(RumbleType.kBothRumble, 0.5);
-        }).withTimeout(0.5), Commands.run(() -> {
-            LEDs.getInstance().endgameAlert = false;
+            LEDs.getInstance().intakeCaught = false;
+        }).withTimeout(0.25), Commands.run(() -> {
+            m_driver.setRumble(RumbleType.kBothRumble, 0.75);
+            m_operator.setRumble(RumbleType.kBothRumble, 0.75);
+            LEDs.getInstance().intakeCaught = true;
+        }).withTimeout(0.25), Commands.run(() -> {
             m_driver.setRumble(RumbleType.kBothRumble, 0.0);
             m_operator.setRumble(RumbleType.kBothRumble, 0.0);
+            LEDs.getInstance().intakeCaught = false;
         }));
     }
 

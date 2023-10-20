@@ -35,9 +35,9 @@ public class LEDs extends VirtualSubsystem {
     // Robot state tracking
     public int loopCycleCount = 0;
     public HPGamePiece hpGamePiece = HPGamePiece.NONE;
-    public boolean gripperStopped = false;
     public boolean endgameAlert = false;
     public boolean lowBatteryAlert = false;
+    public boolean intakeCaught = false;
     private Alliance alliance = Alliance.Invalid;
 
     // LED IO
@@ -60,6 +60,7 @@ public class LEDs extends VirtualSubsystem {
     private LEDs() {
         System.out.println("[Init] Creating LEDs");
         leds = new AddressableLED(Constants.RobotMap.kLedsDIO);
+
         buffer = new AddressableLEDBuffer(length);
         leds.setLength(length);
         leds.setData(buffer);
@@ -143,7 +144,7 @@ public class LEDs extends VirtualSubsystem {
         // Set special modes
         if (endgameAlert) {
             strobe(Section.FULL, Color.kBlue, strobeSlowDuration);
-        } else if (gripperStopped) {
+        } else if (intakeCaught) {
             solid(Section.FULL, Color.kGreen);
         }
 

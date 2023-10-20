@@ -45,10 +45,10 @@ public class Elevator extends SubsystemBase {
         this.m_io = io;
 
         // Automatic Home Trigger
-        new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode == ControlMode.MOTION_PROFILE)
+        /*new Trigger(() -> (m_mode == ControlMode.POSITION || m_mode == ControlMode.MOTION_PROFILE)
                 && (Util.epsilonEquals(m_demand, 0.75, 0.25))
                 && (Util.epsilonEquals(m_inputs.ElevatorHeightInches, 0.75, 0.5)))
-                .onTrue(homeElevator());
+                .onTrue(homeElevator());*/
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Elevator");
         shuffleboardTab.addNumber("Position", () -> Util.truncate(getState().position, 2))
