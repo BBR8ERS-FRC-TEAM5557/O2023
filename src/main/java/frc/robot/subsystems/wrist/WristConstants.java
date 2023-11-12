@@ -15,13 +15,13 @@ public class WristConstants {
     public static final double kSecondSprocketTeethCount = 48.0; //teeth
     public static final double kRotationsPerDegree = kGearReduction * (kSecondSprocketTeethCount / kFirstSprocketTeethCount) / 360.0;
 
-    public static final double kEncoderHomePosition = 279.5; //degrees
+    public static final double kEncoderHomePosition = 278.5; //degrees
     public static final double kPadding = 1.0; // degrees
     public static final double kCruiseVelocity = 150.0; // degrees/sec
     public static final double kTimeToCruise = 0.1; // sec
 
-    public static final double kHomeVoltage = 2.0;
-    public static final double kHomeAmpsThreshold = 15.0;
+    public static final double kHomeVoltage = 4.0;
+    public static final double kHomeAmpsThreshold = 10.0;
 
     public static final double kMinAngle = 170.0; //degrees
     public static final double kMaxAngle = 270.0; //degrees

@@ -141,7 +141,7 @@ public class Wrist extends SubsystemBase {
                         new RunCommand(() -> runVoltage(kHomeVoltage), this)
                                 .until(() -> m_inputs.WristCurrentAmps[0] > kHomeAmpsThreshold),
                         new InstantCommand(() -> m_io.resetSensorPosition(kEncoderHomePosition)),
-                        setWristAngleProfiled(kEncoderHomePosition))
+                        new InstantCommand(() -> runVoltage(0.0))).withTimeout(0.75)
                 .finallyDo(
                         interupted -> new InstantCommand(() -> m_io.shouldEnableUpperLimit(true)));
     }

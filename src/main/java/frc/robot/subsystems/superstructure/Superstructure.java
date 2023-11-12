@@ -138,7 +138,7 @@ public class Superstructure {
 
                 L2_CONE(16.5, 200.0), L2_CUBE(12.0, 200.0),
 
-                L3_CONE(23.5, 210.0), L3_CUBE(20.0, 200.0);
+                L3_CONE(24.0, 220.0), L3_CUBE(20.0, 200.0);
 
                 public double elevator; // inches
                 public double wrist; // degrees

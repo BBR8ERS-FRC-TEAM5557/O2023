@@ -24,16 +24,18 @@ public class Elevator extends SubsystemBase {
 
     private ControlMode m_mode = ControlMode.OPEN_LOOP;
 
-    private TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(kCruiseVelocity,
-            (kCruiseVelocity / kTimeToCruise));
+    private TrapezoidProfile.Constraints m_constraints =
+            new TrapezoidProfile.Constraints(kCruiseVelocity, (kCruiseVelocity / kTimeToCruise));
     private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
     private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
     private TrapezoidProfile m_profile = new TrapezoidProfile(m_constraints, m_goal);
     private double m_profileTimestamp = 0.0;
     private double m_demand = 0.0;
 
-    public final TunableNumber cruiseVelocity = new TunableNumber("Elevator/cruiseVelocity", kCruiseVelocity);
-    public final TunableNumber desiredTimeToSpeed = new TunableNumber("Elevator/desiredTimeToSpeed", kTimeToCruise);
+    public final TunableNumber cruiseVelocity =
+            new TunableNumber("Elevator/cruiseVelocity", kCruiseVelocity);
+    public final TunableNumber desiredTimeToSpeed =
+            new TunableNumber("Elevator/desiredTimeToSpeed", kTimeToCruise);
 
     public enum ControlMode {
         OPEN_LOOP, VOLTAGE, POSITION, MOTION_PROFILE
@@ -47,14 +49,11 @@ public class Elevator extends SubsystemBase {
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Elevator");
         shuffleboardTab.addNumber("Position", () -> Util.truncate(getState().position, 2))
                 .withWidget(BuiltInWidgets.kGraph);
-        shuffleboardTab
-                .addNumber("Velocity", () -> Util.truncate(getState().velocity, 2))
+        shuffleboardTab.addNumber("Velocity", () -> Util.truncate(getState().velocity, 2))
                 .withWidget(BuiltInWidgets.kGraph);
-        shuffleboardTab
-                .addNumber("Demand", () -> Util.truncate(m_demand, 2))
+        shuffleboardTab.addNumber("Demand", () -> Util.truncate(m_demand, 2))
                 .withWidget(BuiltInWidgets.kGraph);
-        shuffleboardTab
-                .addNumber("Output", () -> Util.truncate(m_inputs.ElevatorAppliedVolts, 2))
+        shuffleboardTab.addNumber("Output", () -> Util.truncate(m_inputs.ElevatorAppliedVolts, 2))
                 .withWidget(BuiltInWidgets.kGraph);
         shuffleboardTab
                 .addNumber("Current", () -> Util.truncate(m_inputs.ElevatorCurrentAmps[0], 2))
@@ -139,7 +138,7 @@ public class Elevator extends SubsystemBase {
                                 .until(() -> m_inputs.ElevatorCurrentAmps[0] > kHomeAmpsThreshold),
                         new InstantCommand(() -> m_io.resetSensorPosition(kEncoderHomePosition)),
                         new InstantCommand(() -> runVoltage(0.0), this))
-                .finallyDo(
+                .withTimeout(0.75).finallyDo(
                         interupted -> new InstantCommand(() -> m_io.shouldEnableLowerLimit(true)));
     }
 
